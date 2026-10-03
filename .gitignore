@@ -1,0 +1,3 @@
+*.pdf
+!gallery/gallery.pdf
+/result*

@@ -1,0 +1,10 @@
+[package]
+name = "typst-design"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["Bassel El Mabsout <https://github.com/bmabsout>"]
+license = "MIT"
+repository = "https://github.com/bmabsout/typst-design"
+description = "Bassel El Mabsout's design system: OKLCH ramps, marks, callouts, CV, thesis and statement templates, FPL marks."
+compiler = "0.13.0"
+exclude = ["gallery", "tests", "scripts", "flake.nix", "flake.lock", "*.pdf", "*.png"]
