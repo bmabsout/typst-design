@@ -63,8 +63,8 @@
 // ---------------------------------------------------------- abbreviations --
 
 /// One abbreviation's four forms, as a dictionary to merge with others:
-/// - `abbrv.X`: the first use spells it out ("Fulfillment Priority Logic
-///   (FPL)"), every later one is the short form, linked to the table.
+/// - `abbrv.X`: the first use spells it out ("Portable Document Format
+///   (PDF)"), every later one is the short form, linked to the table.
 /// - `abbrv.X_full`, `abbrv.X_long`, `abbrv.X_short`: that form always.
 #let make-abbrv(short, full) = (
   (short): context box([
