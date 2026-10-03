@@ -1,4 +1,4 @@
-// ICONS — Font Awesome 5 glyphs, used only in contact lists.
+// ICONS: Font Awesome 5 glyphs, used only in contact lists.
 
 #import "type.typ": faces
 

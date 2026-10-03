@@ -1,6 +1,6 @@
-// MATH — role colours in equations, a few operators, and abbreviations.
+// MATH: role colors in equations, a few operators, and abbreviations.
 //
-// A symbol takes its role's colour wherever it appears, so `s_t` is the same
+// A symbol takes its role's color wherever it appears, so `s_t` is the same
 // blue in a sentence, an equation and a plot legend.
 
 #import "color.typ": roles
@@ -17,7 +17,7 @@
 #let action-color = roles.acted
 #let reward-color = roles.valued
 
-/// The usual symbols, already coloured.
+/// The usual symbols, already colored.
 #let rl = (
   st: state($s_t$),
   stp1: state($s_(t+1)$),
@@ -64,7 +64,7 @@
 
 /// One abbreviation's four forms, as a dictionary to merge with others:
 /// - `abbrv.X`: the first use spells it out ("Fulfillment Priority Logic
-///   (FPL)"), every later one is the short form, linked to the table;
+///   (FPL)"), every later one is the short form, linked to the table.
 /// - `abbrv.X_full`, `abbrv.X_long`, `abbrv.X_short`: that form always.
 #let make-abbrv(short, full) = (
   (short): context box([
@@ -83,7 +83,7 @@
 /// Merge many: `abbreviations(("RL", "Reinforcement Learning"), …)`.
 #let abbreviations(..pairs) = pairs.pos().map(((s, f)) => make-abbrv(s, f)).sum(default: (:))
 
-/// The table of abbreviations, each short form labelled so uses link to it.
+/// The table of abbreviations, each short form labeled so uses link to it.
 /// No rules: alternate rows are striped in `stripe`.
 #let abbreviation-table(abbrv, stripe: white.darken(5%), columns: (0.4fr, 1fr)) = {
   let entries = ()

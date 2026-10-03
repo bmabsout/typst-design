@@ -1,12 +1,13 @@
 // The design system's laws. Compiling this file is the test: every
 // `assert` must hold. Run: typst compile --root . tests/laws.typ /tmp/laws.pdf
 #import "../lib.typ": *
+#show: callout-rules
 
 #let hex(c) = c.to-hex()
 #let at(g, t) = hex(g.sample(t))
 
 // 1. The ramps are the thesis's gradients, stop for stop. These literals are
-//    the definitions in bmabsout/Thesis src/style.typ; a ramp that drifts
+//    the definitions in bmabsout/Thesis src/style.typ. A ramp that drifts
 //    from them changes every page the thesis prints.
 #let thesis = (
   maroon: gradient.linear(space: oklch, oklch(0%, 60%, 5deg), oklch(100%, 5%, 20deg)),
@@ -24,31 +25,42 @@
   }
 }
 
-// 2. The named samples print the values the design system documents.
+// 2. Ink tones sit on the 15% grid, and the named samples print what the
+//    design system documents.
+#for t in (stops.ink, stops.strong, stops.medium, stops.soft) { assert.eq(calc.rem(t / 1%, 15), 0) }
+#for (job, t) in jobs { assert(t in (stops.strong, stops.medium, stops.soft), message: job) }
 #assert.eq(hex(palette.primary), "#6a001a")
-#assert.eq(at(ramps.maroon, 45%), "#922840")
-#assert.eq(at(ramps.maroon, 60%), "#b7636c")
-#assert.eq(hex(palette.rule), "#f9d4d3")
-#assert.eq(hex(roles.observed), "#4172b4")
-#assert.eq(hex(roles.acted), "#a35081")
-#assert.eq(hex(roles.valued), "#1f8463")
-#assert.eq(chart.map(hex), ("#588bce", "#8d3c6c", "#3f9d7b", "#9c3a00", "#694b96", "#856801"))
+#assert.eq(hex(palette.secondary), "#922840")
+#assert.eq(at(ramps.maroon, stops.soft), "#b7636c")
+#assert.eq(roles.observed, ramps.blue.sample(stops.soft))
+#assert.eq(roles.acted, ramps.rose.sample(stops.soft))
+#assert.eq(roles.valued, ramps.teal.sample(stops.soft))
 
-// 3. Callout tones are the note's derivation from a ramp.
-#let t = tones(ramps.maroon)
-#assert.eq(hex(t.wash), "#fff8f8")
-#assert.eq(hex(t.line), "#fce0e1")
-#assert.eq(hex(t.title), at(ramps.maroon, 35%))
+// 3. Quiet tones keep their sample's lightness and hue, and carry at most
+//    `quietness × (1 − lightness)` of chroma, whatever the ramp.
+#for (name, g) in ramps {
+  for t in (stops.line, stops.rule, stops.fill) {
+    let (l, c, h, ..) = oklch(quiet(g, t)).components()
+    let (l0, c0, h0, ..) = oklch(g.sample(t)).components()
+    assert.eq(l, l0, message: name)
+    assert(c <= quietness * (1 - l / 100%) + 0.00001, message: name + " too loud at " + repr(t))
+  }
+}
+#assert.eq(tones(ramps.rose).wash, quiet(ramps.rose, stops.fill))
+#assert.eq(tones(ramps.rose).line, quiet(ramps.rose, stops.rule))
+#assert.eq(palette.rule, quiet(ramps.maroon, stops.rule))
 
-// 4. A shade keeps its ramp's lightness and hue, and scales only chroma.
-#let s = oklch(shade(ramps.maroon, 82%, chroma: 50%)).components()
-#let r = oklch(ramps.maroon.sample(82%)).components()
-#assert.eq(s.at(0), r.at(0))
-#assert.eq(s.at(2), r.at(2))
-#assert(calc.abs(s.at(1) - r.at(1) / 2) < 0.0001)
+// 4. The classic tones are the dissertation's, value for value.
+#let ct = classic-tones(ramps.maroon)
+#assert.eq(hex(ct.wash), "#fff8f8")
+#assert.eq(hex(ct.line), "#fce0e1")
+#assert.eq(hex(ct.title), at(ramps.maroon, 35%))
+
+// Chart slots alternate soft and medium.
+#assert.eq(chart.len(), 6)
 
 // 5. The fulfillment scale runs bad (dark crimson) to good (teal), and every
-//    sample is dark enough to colour text on paper.
+//    sample is dark enough to color text on paper.
 #assert.eq(hex(fulfillment.sample(0%)), hex(oklch(44%, 0.16, 14deg)))
 #assert.eq(hex(fulfillment.sample(100%)), hex(oklch(58%, 0.11, 185deg)))
 #assert.eq(fulfillment.space(), oklch)

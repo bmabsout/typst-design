@@ -1,17 +1,17 @@
-// CV — the curriculum vitae's building blocks: sections over capsule rules,
-// entries with a date flush right, labelled links joined by diamonds,
+// CV: the curriculum vitae's building blocks: sections over capsule rules,
+// entries with a date flush right, labeled links joined by diamonds,
 // publications and a blush contact panel.
 //
-// `cv-kit(style)` returns every block configured by one style dictionary;
+// `cv-kit(style)` returns every block configured by one style dictionary.
 // `cv-style(..)` builds that dictionary from the identity's defaults, so a
 // document overrides only what differs.
 
-#import "../color.typ": palette, ramps, shade as _shade, stops
+#import "../color.typ": palette, ramps, quiet, stops
 #import "../type.typ": faces
 #import "../marks.typ": capsule-rule, diamond as _diamond
 #import "../icons.typ": fa
 
-/// The CV's style. Colours are the identity's ramp samples; faces default to
+/// The CV's style. Colors are the identity's ramp samples, and faces default to
 /// the CV family (EB Garamond, Libertinus Sans labels).
 #let cv-style(
   ramp: ramps.maroon,
@@ -25,14 +25,14 @@
   icons: faces.icons,
   owner: none,
 ) = {
-  // Every colour is a sample (or a quiet shade) of one ramp; pass `ramp` to
-  // recolour the whole CV, or a single colour to override it.
+  // Every color is a sample or a quiet tone of one ramp: pass `ramp` to
+  // recolor the whole CV, or a single color to override it.
   let pick(v, d) = if v == auto { d } else { v }
-  let primary = pick(primary, ramp.sample(stops.heading-1))
-  let secondary = pick(secondary, ramp.sample(stops.heading-2))
-  let shade-fill = pick(shade, _shade(ramp, 97%, chroma: 35%))
-  let shade-line = pick(shade-line, _shade(ramp, 82%, chroma: 80%))
-  let rule = pick(rule, _shade(ramp, 91%, chroma: 55%))
+  let primary = pick(primary, ramp.sample(stops.strong))
+  let secondary = pick(secondary, ramp.sample(stops.medium))
+  let shade-fill = pick(shade, quiet(ramp, stops.fill))
+  let shade-line = pick(shade-line, quiet(ramp, stops.line))
+  let rule = pick(rule, quiet(ramp, stops.rule))
   (
   colors: (
     primary: primary,
@@ -75,10 +75,11 @@
   /// "label: content", the label semibold.
   let labeled(label, content) = [#text(weight: 600)[#label:] #content]
   let emphasis(content) = text(style: "italic", weight: "medium")[#content]
-  /// A line of labelled links under an entry, joined by diamonds.
-  let links(..items) = [\ #h(-style.insets.inner.left / 2)#items.pos().join([#diamond()])]
+  /// A line of labeled links under an entry, joined by diamonds, aligned
+  /// with the entry's text.
+  let links(..items) = [\ #items.pos().join([#diamond()])]
 
-  /// A title kept with its first item; the rest may break.
+  /// A title kept with its first item. The rest may break.
   let titled-list(title, items, inset, spacing) = {
     set block(spacing: 0em)
     block(breakable: false)[
@@ -99,7 +100,7 @@
     stack(spacing: 0em, title, block(inset: inset, content))
   }
 
-  /// The first child stays with `first`, the last with `last`; the middle
+  /// The first child stays with `first`, the last with `last`, and the middle
   /// may break.
   let stack-unbreakable(first, last, spacing, inset, children) = if children.len() == 1 {
     block(breakable: false)[#first#block(inset: inset)[#children.first()]#last]
@@ -139,7 +140,7 @@
 
   let subsections-list(title, subsections) = titled-list(text(..style.subsection, title), subsections, style.insets.inner, style.spacing.element)
 
-  /// An entry's heading row: bold title, italic organisation, the date flush
+  /// An entry's heading row: bold title, italic organization, the date flush
   /// right in small caps.
   let entry-heading(l: none, m: none, r: none) = {
     text(weight: style.entry.heading.weight, l)
@@ -168,44 +169,61 @@
   }
   let review-venues(venues) = venues.join([#diamond()])
 
-  /// Authors joined by diamonds; a name containing `style.owner` in bold.
-  let authors(names) = names.split(" and ").map(name => if style.owner != none and name.contains(style.owner) [*#name*] else { name }).join([#diamond()])
+  /// Authors joined by diamonds, the owner in bold. `names` is an array,
+  /// or a string joined by " and ". `owner` is matched exactly when given
+  /// here, and by substring when it comes from the style.
+  let authors(names, owner: auto) = {
+    let names = if type(names) == str { names.split(" and ") } else { names }
+    let bold(name) = if owner != auto { name == owner } else { style.owner != none and name.contains(style.owner) }
+    names.map(name => if bold(name) [*#name*] else { name }).join([#diamond()])
+  }
 
   /// A publication: its number, the authors with the year (and citations)
-  /// flush right, then the italic title and labelled links.
-  let publication-entry(publication, label) = grid(
-    columns: (auto, 1fr),
-    gutter: 1em,
-    [#label],
-    block(breakable: false, stack(
-      spacing: style.spacing.paragraph,
-      [
-        #authors(publication.authors)
-        #h(1fr)
-        #smallcaps([#(if (publication.at("citations", default: 0) != 0) [#smallcaps[(citations: #publication.citations) ]])#publication.year])
-      ],
-      [
-        #block(inset: (left: style.insets.inner.left))[#emph[#publication.title]
-          #links(
-            labeled(publication.venue, publication.doi),
-            ..publication.extra_links.map(x => labeled(..x)),
-          )
-        ]
-      ],
-    )),
-  )
+  /// flush right, then the italic title, an optional note, and labeled
+  /// links. `publication` is a dictionary with `authors` (array or string),
+  /// `title`, `venue` and `year`, and optionally `doi` (none for a venue with
+  /// no link), `citations`, `note` and `extra_links`.
+  let publication-entry(publication, label) = {
+    set par(leading: style.spacing.paragraph)
+    let doi = publication.at("doi", default: none)
+    let note = publication.at("note", default: none)
+    let citations = publication.at("citations", default: 0)
+    grid(
+      columns: (auto, 1fr),
+      gutter: 1em,
+      [#label],
+      block(breakable: false, stack(
+        spacing: style.spacing.paragraph,
+        [
+          #authors(publication.authors)
+          #h(1fr)
+          #smallcaps([#(if citations != 0 [#smallcaps[(citations: #citations) ]])#publication.year])
+        ],
+        [
+          #block(inset: (left: style.insets.inner.left))[#emph[#publication.title]#if note != none [ \ #note]
+            #links(
+              if doi == none { text(weight: 600, publication.venue) } else { labeled(publication.venue, doi) },
+              ..publication.at("extra_links", default: ()).map(x => labeled(..x)),
+            )
+          ]
+        ],
+      )),
+    )
+  }
 
-  let icon(name, color: style.colors.shade-fg) = text(
-    font: style.fonts.icons,
-    size: style.header.contact.icon.size,
-    weight: "bold",
-    fill: color,
-    fa.at(name),
-  )
+  /// A contact icon: a key of `fa`, or ready-made content (another glyph).
+  let icon(name, color: style.colors.shade-fg) = if type(name) != str { name } else {
+    text(
+      font: style.fonts.icons,
+      size: style.header.contact.icon.size,
+      weight: "bold",
+      fill: color,
+      fa.at(name),
+    )
+  }
 
   let contact-column(items) = grid(
     columns: (style.header.contact.icon.width, auto),
-    rows: (auto, auto),
     gutter: style.header.contact.box.gutter,
     ..items.map(item => (
       align(center)[#icon(item.icon)],
@@ -213,31 +231,100 @@
     )).flatten()
   )
 
-  /// The blush contact panel: six `(icon:, text:)` items in three columns.
+  /// The blush contact panel of `(icon:, text:)` items. Six items sit in
+  /// three columns of two. Any other number sits one item per column.
   let contact-box(items) = block(
     width: 100%,
     fill: style.colors.shade,
     radius: style.header.contact.box.radius,
     inset: style.header.contact.box.inset,
-    grid(
-      columns: (auto, auto, auto),
-      gutter: 1fr,
-      contact-column(items.slice(0, 2)),
-      contact-column(items.slice(2, 4)),
-      contact-column(items.slice(4, 6)),
-    ),
+    if items.len() == 6 {
+      grid(
+        columns: (auto, auto, auto),
+        gutter: 1fr,
+        contact-column(items.slice(0, 2)),
+        contact-column(items.slice(2, 4)),
+        contact-column(items.slice(4, 6)),
+      )
+    } else {
+      grid(
+        columns: items.len() * (auto,),
+        column-gutter: 1fr,
+        ..items.map(item => contact-column((item,))),
+      )
+    },
   )
 
   /// The name, a "Last updated" date flush right, and the contact panel.
-  let header(name, contact-info, updated: datetime.today()) = [
-    #stack(
-      align(left, text(..style.header.name, name)),
-      align(bottom + right, text(size: 15pt, [Last updated: #updated.display("[month repr:long] [day], [year]")], style: "italic", font: style.fonts.body)),
-      dir: ltr,
+  /// `updated` is a datetime, or content such as a source document's date.
+  let header(name, contact-info, updated: datetime.today()) = {
+    let date = if type(updated) == datetime { updated.display("[month repr:long] [day], [year]") } else { updated }
+    [
+      #stack(
+        align(left, text(..style.header.name, name)),
+        align(bottom + right, text(size: 15pt, [Last updated: #date], style: "italic", font: style.fonts.body)),
+        dir: ltr,
+      )
+      #v(style.header.vertical_padding)
+      #contact-info
+    ]
+  }
+
+  /// A section that breaks gently: only the title is kept with what follows,
+  /// and every child may break, so long lists (awards, talks, courses) do
+  /// not leave half-empty pages. It looks the same as `section-list`.
+  let section(title, children) = {
+    let spacing = style.spacing.section
+    let inset = (left: style.insets.section.left)
+    block(breakable: false, sticky: true)[
+      #rule
+      #v(spacing)
+      #text(..style.section, upper(title))
+    ]
+    v(style.insets.section.top)
+    children.slice(0, -1).map(c => block(inset: inset, c) + v(spacing, weak: true)).join()
+    block[#block(inset: inset, children.last())#v(spacing)#rule]
+  }
+
+  /// An entry heading that wraps cleanly: the date keeps its own column and
+  /// wrapped lines get the entries' leading and a hanging indent.
+  let wrapping-heading(l: none, m: none, r: none) = {
+    set par(leading: style.spacing.paragraph, hanging-indent: 1em)
+    grid(
+      columns: (1fr, auto),
+      column-gutter: 1.5em,
+      par[#text(weight: style.entry.heading.weight, l)#if m != none [#h(0.5em)#emph(m)]],
+      smallcaps(lower(r)),
     )
-    #v(style.header.vertical_padding)
-    #contact-info
-  ]
+  }
+
+  /// A one-line entry for lists such as awards or courses, with an optional
+  /// indented note.
+  let row(l, m: none, r: none, body: []) = entry(wrapping-heading(l: l, m: m, r: r), body)
+
+  /// A titled list of rows, closer together than full entries.
+  let row-list(title, rows) = titled-list(text(..style.subsection, title), rows, style.insets.inner, style.spacing.paragraph)
+
+  /// A subsection of label and items rows, items joined by diamonds.
+  let labeled-rows(title, pairs) = subsection((
+    title: title,
+    body: {
+      set par(leading: style.spacing.paragraph)
+      grid(
+        columns: (auto, 1fr),
+        column-gutter: 1em,
+        row-gutter: 0.8em,
+        ..pairs.map(((name, items)) => (text(weight: "bold", smallcaps(name)), items.join([#diamond()]))).flatten()
+      )
+    },
+  ))
+
+  /// A talk: the title and date on the first line, then the venue and any
+  /// co-authors.
+  let talk(title, venue, date, with: none) = entry(
+    wrapping-heading(l: emph(title), r: date),
+    [#venue#if with != none [#diamond()#authors(with)]],
+  )
 
   (
     style: style,
@@ -264,6 +351,12 @@
     contact-column: contact-column,
     contact-box: contact-box,
     header: header,
+    section: section,
+    wrapping-heading: wrapping-heading,
+    row: row,
+    row-list: row-list,
+    labeled-rows: labeled-rows,
+    talk: talk,
   )
 }
 

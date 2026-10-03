@@ -1,4 +1,4 @@
-// RESUME — the one-page, two-column resume: a name beside a contact panel,
+// RESUME: the one-page, two-column resume: a name beside a contact panel,
 // small-caps section titles over a hairline, dense entries.
 
 #import "../color.typ": palette

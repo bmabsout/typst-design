@@ -1,0 +1,43 @@
+# Changelog
+
+All notable changes to this package are recorded here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
+[Semantic Versioning](https://semver.org/).
+
+## [Unreleased]
+
+### Added
+- `flow-block`: a rounded callout block that breaks across pages, rounded only
+  where it really starts and ends. It is the default callout engine.
+- `callout-rules`: the document rule that lets callout figures break.
+- Sampling rules: ink tones on a 15% grid (`stops.ink`, `strong`, `medium`,
+  `soft`) and quiet tones by `quiet(g, t)`, whose chroma is at most
+  `quietness × (1 − lightness)`. `jobs` maps each job to its stop.
+- `callouts(classic: true)` and `classic-tones` reproduce the original
+  callouts exactly.
+- `ramps.sienna`, an identity ramp in brownish orange.
+- CV kit: `section` (breaks gently), `wrapping-heading`, `row`, `row-list`,
+  `labeled-rows` and `talk`. `contact-box` takes any number of items and
+  icons given as content. `header` takes a fixed date. `authors` and
+  `publication-entry` take author arrays, an exact `owner`, an optional DOI
+  and a note.
+- Examples (`examples/`), checked by `nix flake check`.
+
+### Changed
+- The fulfillment scale now runs crimson → copper → amber → green → teal.
+  It is readable as text and the ends part for color-blind readers.
+- Role colors, chart slots, callout tones and the blush (`mark-fill`, `rule`,
+  `mark-line`) follow the sampling rules. `palette.rule-soft` is merged into
+  `palette.rule`.
+- CV links align with the entry's text, and publications use the entries'
+  leading.
+- The CV and résumé kits take the name to bold in author lists as `owner`.
+
+## [0.1.0] - 2026-10-03
+
+### Added
+- Ramps, palette, roles, chart slots and the fulfillment scale.
+- Capsule rule, diamond, callouts, role-colored math and abbreviations.
+- Fulfillment marks: `pie`, `price` and `trace`.
+- Templates: thesis, CV, résumé, statement and working document.
+- Gallery, laws and a Nix flake.

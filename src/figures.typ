@@ -1,4 +1,4 @@
-// FIGURES — CeTZ primitives for the thesis's diagrams: a distribution drawn
+// FIGURES: CeTZ primitives for the thesis diagrams. A distribution is drawn
 // as a bell with hatching under it, and a value range as a segment with a
 // tick. They take the `cetz` module as their first argument, so this
 // library depends on no package and a document brings the CeTZ it uses:

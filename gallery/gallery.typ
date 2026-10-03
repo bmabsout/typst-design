@@ -1,8 +1,9 @@
 // The gallery: the whole system on a few pages. Build with
 //   typst compile --root . gallery/gallery.typ gallery/gallery.pdf
 #import "../lib.typ": *
+#show: callout-rules
 
-#set document(title: "typst-design — gallery", author: "Bassel El Mabsout")
+#set document(title: "typst-design gallery", author: "Bassel El Mabsout")
 #set page(paper: "us-letter", margin: (x: 0.9in, y: 0.85in), footer: context align(center, text(fill: palette.primary, size: 0.85em, counter(page).display())))
 #set text(font: faces.serif, size: 10.5pt, fill: palette.ink)
 #set par(leading: 0.62em, justify: true)
@@ -34,14 +35,14 @@
 #capsule-rule()
 #v(0.6em)
 #text(size: scale(1))[
-  Every colour is a sample of an OKLCH ramp#diamond()structure comes from a capsule rule and a diamond#diamond()one serif carries every sentence.
+  Every color is a sample of an OKLCH ramp#diamond()structure comes from a capsule rule and a diamond#diamond()one serif carries every sentence.
 ]
 #v(1fr)
 #grid(columns: (1fr,) * 9, gutter: 0.35em, ..ramps.pairs().filter(((n, _)) => n != "black").map(((n, g)) => stack(spacing: 0.4em, rect(width: 100%, height: 9em, radius: 0.2em, fill: gradient.linear(..g.stops(), space: g.space(), angle: 90deg)), text(font: faces.sans, size: scale(-2.5), weight: 600, upper(n)))))
 #v(2em)
 
-= Colour
-Each ramp is a straight line through OKLCH from black to white at one hue. A colour is named by its ramp and a position — `ramps.maroon.sample(30%)` — and the hex beneath each chip is what that position prints, never an input. Change a ramp's few numbers and every heading, rule, callout and plot follows.
+= Color
+Each ramp is a straight line through OKLCH from black to white at one hue. A color is named by its ramp and a position (`ramps.maroon.sample(30%)`), and the hex beneath each chip is what that position prints, never an input. Change a ramp's few numbers and every heading, rule, callout and plot follows.
 
 == The ramps and where each job samples
 #let bar(g) = swatch(g, width: 100%, height: 1.4em, samples: 160)
@@ -56,21 +57,22 @@ Each ramp is a straight line through OKLCH from black to white at one hue. A col
     }
   })
 })
-#ramp-row("maroon — identity", ramps.maroon, (("ink", 15%), ("h1", 30%), ("h2", 45%), ("h3", 60%), ("blush", 82%), ("rule", 90%)))
-#ramp-row("blue — observed, algorithms", ramps.blue, (("ink", 15%), ("title", 35%), ("role", 55%), ("chart", 63%)))
-#ramp-row("rose — acted, theorems", ramps.rose, (("ink", 15%), ("title", 35%), ("chart", 48%), ("role", 55%)))
-#ramp-row("teal — valued, results", ramps.teal, (("ink", 15%), ("title", 35%), ("role", 55%), ("chart", 63%)))
-#ramp-row("orange — warnings (interpolated in OKLab)", ramps.orange, (("ink", 15%), ("notice", 50%)))
+#ramp-row("maroon: identity", ramps.maroon, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%), ("line", 80%), ("rule", 90%), ("fill", 96%)))
+#ramp-row("blue: observed, algorithms", ramps.blue, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%)))
+#ramp-row("rose: acted, theorems", ramps.rose, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%)))
+#ramp-row("teal: valued, results", ramps.teal, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%)))
+#ramp-row("orange: warnings (interpolated in OKLab)", ramps.orange, (("ink", 15%), ("strong", 30%), ("medium", 45%)))
+#caption[Two rules place every color. Ink tones sit on a 15% grid: ink, strong, medium, soft. Quiet tones sit at 80, 90 and 96% and carry at most `quietness × (1 − lightness)` of chroma, so every ramp's washes are equally quiet.]
 
 == The palette
 #grid(columns: (1fr,) * 5, row-gutter: 0.8em, ..palette.pairs().map(((name, c)) => chip(c, name)))
 
 == Roles
-The same colour marks a role in prose, in equations and in plots: what is #text(fill: roles.observed)[observed], what is #text(fill: roles.acted)[acted], what is #text(fill: roles.valued)[valued].
+The same color marks a role in prose, in equations and in plots: what is #text(fill: roles.observed)[observed], what is #text(fill: roles.acted)[acted], what is #text(fill: roles.valued)[valued].
 $ #rl.at + pi(#rl.st) quad #rl.Q (#rl.st, #rl.at) = #rl.rt + gamma #rl.V (#rl.stp1) $
 
 == Chart slots
-Fixed order, never cycled; neighbours alternate between 63% and 48% lightness so they part for colour-blind readers too.
+Fixed order, never cycled. Neighbors alternate soft (60%) and medium (45%), so they part by lightness too.
 #grid(columns: (1fr,) * 6, ..chart.enumerate().map(((i, c)) => chip(c, "chart-" + str(i + 1))))
 
 == Callout tones
@@ -89,10 +91,10 @@ Fixed order, never cycled; neighbours alternate between 63% and 48% lightness so
 #grid(columns: (1fr, 1fr), gutter: 1.5em,
   [
     == Faces
-    #text(font: faces.serif, size: scale(1))[Source Serif 4] — every sentence. \
-    #text(font: faces.display, size: scale(2), weight: 600)[Crimson Pro] — names, titles. \
-    #label-text[Source Sans 3] — labels only. \
-    #text(font: faces.garamond, size: scale(1))[EB Garamond] — the CV family. \
+    #text(font: faces.serif, size: scale(1))[Source Serif 4]: every sentence. \
+    #text(font: faces.display, size: scale(2), weight: 600)[Crimson Pro]: names, titles. \
+    #label-text[Source Sans 3]: labels only. \
+    #text(font: faces.garamond, size: scale(1))[EB Garamond]: the CV family. \
   ],
   [
     == One ×1.2 scale
@@ -107,8 +109,7 @@ Fixed order, never cycled; neighbours alternate between 63% and 48% lightness so
 
 == Capsule rule
 #capsule-rule()
-#capsule-rule(paint: palette.rule-soft)
-#caption[Round-capped dots, so each reads as a capsule: the identity `rule` (maroon 90%) and the CV's softer `rule-soft`.]
+#caption[Round-capped dots, so each reads as a capsule, in the `rule` tone: maroon's quiet 90%.]
 
 == Diamond
 Reinforcement Learning#diamond()Embedded Systems#diamond()Type Theory#diamond()Control Systems \
@@ -137,9 +138,9 @@ Reinforcement Learning#diamond()Embedded Systems#diamond()Type Theory#diamond()C
     (icon: "phone", text: [+1 555 0100]), (icon: "scholar", text: [Google Scholar]),
   ))
 })
-#caption[`cv-style(ramp: ramps.maroon)` — pass another ramp and the whole CV recolours.]
+#caption[`cv-style(ramp: ramps.maroon)`. Pass another ramp and the whole CV recolors.]
 
-== Recoloured from one argument
+== Recolored from one argument
 #block(width: 100%, {
   set text(font: faces.garamond)
   let k = cv-kit(cv-style(ramp: ramps.blue, owner: "Author A."))
@@ -153,4 +154,4 @@ Reinforcement Learning#diamond()Embedded Systems#diamond()Type Theory#diamond()C
 
 #trace((0.9, 0.85, 0.8, 0.72, 0.6, 0.5, 0.42, 0.38, 0.33, 0.3, 0.27, 0.24, 0.2), back: 6, ahead: 6, at: datetime(year: 2026, month: 10, day: 3))
 
-#caption[`pie`, `price` and `trace`: a value's colour is always `colour(v)`, a sample of the one scale.]
+#caption[`pie`, `price` and `trace`: a value's color is always `fulfillment-color(v)`, a sample of the one scale.]
