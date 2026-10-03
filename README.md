@@ -12,7 +12,7 @@ A design system for documents, built from a few hand-picked rules and written in
 ```
 
 - **Color from gradients, not swatches.** Every color is a ramp and a position (`ramps.maroon.sample(30%)`). Change a ramp's two endpoints and every heading, rule, callout and plot follows.
-- **Two rules place every sample.** Ink tones sit on a 15% grid (ink, strong, medium, soft). Quiet tones carry chroma in proportion to their distance from white, so washes are equally quiet in every hue.
+- **One color in, a whole palette out.** `ramp-from(color)` grows a ramp from a single color, and three rules place every sample on it. Ink tones sit on a 15% grid. Running text stays at medium or deeper, so it keeps 4.5:1 contrast. Quiet tones carry chroma in proportion to their distance from white, so washes are equally quiet in every hue.
 - **Callouts that break like prose.** A long note is rounded only where it really starts and ends. Where a page cuts it, it is simply open.
 - **Templates as data.** Each template takes its whole look as one dictionary. Recolor a CV from one argument, or switch a thesis to a university's black-heading compliance mode.
 - **Relative units.** Sizes are steps of one ×1.2 type scale and `em`. Nothing is in pixels.
@@ -69,6 +69,12 @@ A **ramp** is a straight line through OKLCH from black to near-white at one hue.
 #let maroon = ramp(5deg, chroma: (60%, 5%), hue-shift: 15deg)  // = ramps.maroon
 ```
 
+**One color is enough.** `ramp-from(color)` grows a whole identity ramp whose strong sample (30%) is exactly that color. Lightness runs straight to white, chroma fades, and the hue warms a little, as maroon's does. Every heading, wash, rule and mark then follows from the rules below. Pick a color dark enough for headings (about 7:1 on white or more).
+
+```typst
+#let style = cv-style(ramp: rgb("#6a001a"))  // a color works wherever a ramp does
+```
+
 | Ramp | From | To | Used for |
 | --- | --- | --- | --- |
 | `maroon` | `oklch(0% 0.24 5°)` | `oklch(100% 0.02 20°)` | identity, headings, rules, blush |
@@ -79,18 +85,19 @@ A **ramp** is a straight line through OKLCH from black to near-white at one hue.
 | `orange` | `oklch(0% 0.292 43°)` | `oklch(100% 0.292 43°)`, through OKLab | warnings |
 | `rust`, `violet`, `gold` | hues 43°, 300°, 89° | constant chroma | chart slots 4–6 |
 
-Two rules decide where each job samples a ramp:
+Three rules decide where each job samples a ramp:
 
 | Rule | Positions (`stops`) | Jobs (`jobs`) |
 | --- | --- | --- |
-| **Ink tones** sit on a 15% grid | `ink` 15%, `strong` 30%, `medium` 45%, `soft` 60% | heading 1 and callout titles are strong. Heading 2, supplements and notices are medium. Heading 3, roles and references are soft. |
+| **Ink tones** sit on a 15% grid | `ink` 15%, `strong` 30%, `medium` 45%, `soft` 60% | Heading 1 and callout titles are strong. Heading 2, supplements, notices, roles and references are medium. Heading 3 and chart marks are soft. |
+| **Running text** sits at medium or deeper | 15–45% | keeps 4.5:1 contrast on paper in every ramp. Soft is for large text and marks only. |
 | **Quiet tones** keep a sample's lightness and hue, with chroma ≤ `quietness × (1 − L)` | `line` 80%, `rule` 90%, `fill` 97% | diamond outlines (80%), capsule rules and callout outlines (90%), panels and callout washes (97%) |
 
 ```typst
 #ramps.rose.sample(stops.strong)     // a theorem's title
 #quiet(ramps.rose, stops.fill)       // its wash
 #tones(ramps.rose)                   // wash, line, title, supplement, ink, notice
-#text(fill: roles.valued)[reward]    // teal at the soft stop
+#text(fill: roles.valued)[reward]    // teal at the medium stop
 ```
 
 `palette` names the identity's colors (`primary`, `secondary`, `ink`, `ink-muted`, `mark-fill`, `rule`, `mark-line`). `chart` gives six categorical colors that alternate soft and medium, so neighbors differ in lightness as well as hue. A dark theme samples the same job at `mirror(t)`.
@@ -153,7 +160,7 @@ Each template is a style dictionary, a kit of functions built from it, and a pag
 
 ## Fulfillment marks
 
-A fulfillment is a value in [0, 1] saying how well a requirement is met. Low is urgent. `fulfillment` is the scale from bad to good: crimson → copper → amber → green → teal. Every sample is dark enough for text. The ends differ in lightness and lean blue at the good end, so readers with red–green color blindness can still tell them apart.
+A fulfillment is a value in [0, 1] saying how well a requirement is met. Low is urgent. `fulfillment` is the scale from bad to good: crimson → copper → amber → green → teal. Every sample keeps 3:1 contrast on paper, enough for marks and bold labels. The ends differ in lightness and lean blue at the good end, so readers with red–green color blindness can still tell them apart.
 
 ```typst
 #price(0.42)            // a pie and "42%"
@@ -178,7 +185,7 @@ Everything is exported flat, and also by module: `colors`, `typography`, `marks`
 
 | Module | Exports |
 | --- | --- |
-| color | `ramp`, `ramps`, `stops`, `jobs`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
+| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
 | callouts | `callouts`, `callout-rules`, `flow-block`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |

@@ -10,9 +10,13 @@ All notable changes to this package are recorded here. The format follows
 - `flow-block`: a rounded callout block that breaks across pages, rounded only
   where it really starts and ends. It is the default callout engine.
 - `callout-rules`: the document rule that lets callout figures break.
+- `ramp-from(color)`: a whole identity ramp grown from one color, whose
+  strong sample is that color. `cv-style(ramp:)` accepts a color too.
 - Sampling rules: ink tones on a 15% grid (`stops.ink`, `strong`, `medium`,
   `soft`) and quiet tones by `quiet(g, t)`, whose chroma is at most
-  `quietness × (1 − lightness)`. `jobs` maps each job to its stop.
+  `quietness × (1 − lightness)`. `jobs` maps each job to its stop. Running
+  text (roles, references) sits at medium or deeper, and the laws check
+  4.5:1 contrast for it in every ramp.
 - `callouts(classic: true)` and `classic-tones` reproduce the original
   callouts exactly.
 - `ramps.sienna`, an identity ramp in brownish orange.
@@ -25,7 +29,8 @@ All notable changes to this package are recorded here. The format follows
 
 ### Changed
 - The fulfillment scale now runs crimson → copper → amber → green → teal.
-  It is readable as text and the ends part for color-blind readers.
+  Every sample keeps 3:1 contrast on paper, and the ends part for
+  color-blind readers.
 - Role colors, chart slots, callout tones and the blush (`mark-fill`, `rule`,
   `mark-line`) follow the sampling rules. `palette.rule-soft` is merged into
   `palette.rule`.

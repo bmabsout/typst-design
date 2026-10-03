@@ -28,6 +28,27 @@
   gradient.linear(space: space, oklch(l0, c0, hue), oklch(l1, c1, hue + hue-shift))
 }
 
+/// A whole identity ramp from ONE color: the ramp whose strong sample (30%)
+/// is exactly `color`. Lightness runs in a straight line to white, chroma
+/// fades to `end-chroma`, and the hue warms by `hue-shift` along the way,
+/// as maroon's does. Every other tone (headings, washes, rules, marks) then
+/// follows from the sampling rules, so a document's whole palette changes
+/// with this one argument. A color darker than 30% lightness gets a ramp
+/// that starts at black and ends short of white.
+#let ramp-from(color, hue-shift: 15deg, end-chroma: 5%, at: 30%) = {
+  let (l, c, h, ..) = oklch(color).components()
+  let t = at / 100%
+  let c1 = if type(end-chroma) == ratio { end-chroma / 100% * 0.4 } else { end-chroma }
+  let c0 = calc.max(0, (c - t * c1) / (1 - t))
+  let h0 = h - t * hue-shift
+  let (l0, l1) = if l >= at {
+    ((l - at) / (1 - t), 100%)
+  } else {
+    (0%, l / t)
+  }
+  gradient.linear(space: oklch, oklch(l0, c0, h0), oklch(l1, c1, h0 + hue-shift))
+}
+
 /// The hues the identity is built on, in degrees around OKLCH.
 #let hues = (
   maroon: 5deg,
@@ -77,12 +98,14 @@
 
 // ---------------------------------------------------------------- samples --
 
-/// Where on a ramp each job samples. Two rules place every color:
+/// Where on a ramp each job samples. Three rules place every color:
 ///
 /// - INK TONES sit on a 15% grid of depth: 15% for text on a wash of the
 ///   same ramp, 30% strong (the identity, heading 1, a callout's title), 45%
-///   medium (heading 2, a supplement, a notice), 60% soft (heading 3, the
-///   role colors, references).
+///   medium (heading 2, a supplement, a notice, the role colors,
+///   references), 60% soft (heading 3, chart marks).
+/// - RUNNING TEXT sits at medium or deeper, so it keeps 4.5:1 contrast on
+///   paper in every ramp. Soft is for large text and marks only.
 /// - QUIET TONES sit near white, at 80% (a mark's line), 90% (rules,
 ///   outlines) and 97% (fills), drawn with `quiet`.
 ///
@@ -105,8 +128,8 @@
   title: stops.strong,
   supplement: stops.medium,
   notice: stops.medium,
-  role: stops.soft,
-  ref: stops.soft,
+  role: stops.medium,
+  ref: stops.medium,
 )
 
 /// The same job on a dark ground: the sample mirrored across the ramp.
@@ -185,16 +208,16 @@
 
 /// The fulfillment scale (FPL): a value in [0, 1] as a color, bad to good.
 /// Low is urgent. Five OKLCH stops: the crimson of the identity, copper,
-/// amber, green, and the teal of the `valued` role. Two things make it
-/// readable. Lightness stays between 44% and 70%, so every sample can color
-/// text on paper. Bad is darker than good and good leans blue, so the two
-/// ends still part for red–green color-blind readers.
+/// amber, green, and the teal of the `valued` role. Lightness stays between
+/// 44% and 64%, so every sample keeps 3:1 contrast on paper, enough for
+/// marks and bold labels. Bad is darker than good and good leans blue, so
+/// the two ends still part for red–green color-blind readers.
 #let fulfillment = gradient.linear(
   space: oklch,
   (oklch(44%, 0.16, 14deg), 0%),
   (oklch(60%, 0.15, 45deg), 33%),
-  (oklch(70%, 0.13, 82deg), 58%),
-  (oklch(65%, 0.13, 145deg), 78%),
+  (oklch(64%, 0.13, 82deg), 58%),
+  (oklch(62%, 0.13, 145deg), 78%),
   (oklch(58%, 0.11, 185deg), 100%),
 )
 

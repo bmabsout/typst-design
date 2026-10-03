@@ -6,7 +6,7 @@
 // `cv-style(..)` builds that dictionary from the identity's defaults, so a
 // document overrides only what differs.
 
-#import "../color.typ": palette, ramps, quiet, stops
+#import "../color.typ": palette, ramps, ramp-from, quiet, stops
 #import "../type.typ": faces
 #import "../marks.typ": capsule-rule, diamond as _diamond
 #import "../icons.typ": fa
@@ -25,8 +25,11 @@
   icons: faces.icons,
   owner: none,
 ) = {
-  // Every color is a sample or a quiet tone of one ramp: pass `ramp` to
-  // recolor the whole CV, or a single color to override it.
+  // Every color is a sample or a quiet tone of one ramp: pass `ramp` (a
+  // ramp, or one color to grow it from) to recolor the whole CV, or a
+  // single named color to override just that one.
+  // `ramp` may also be a single color: the ramp is grown from it.
+  let ramp = if type(ramp) == color { ramp-from(ramp) } else { ramp }
   let pick(v, d) = if v == auto { d } else { v }
   let primary = pick(primary, ramp.sample(stops.strong))
   let secondary = pick(secondary, ramp.sample(stops.medium))

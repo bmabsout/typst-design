@@ -38,7 +38,7 @@
   Every color is a sample of an OKLCH ramp#diamond()structure comes from a capsule rule and a diamond#diamond()one serif carries every sentence.
 ]
 #v(1fr)
-#grid(columns: (1fr,) * 9, gutter: 0.35em, ..ramps.pairs().filter(((n, _)) => n != "black").map(((n, g)) => stack(spacing: 0.4em, rect(width: 100%, height: 9em, radius: 0.2em, fill: gradient.linear(..g.stops(), space: g.space(), angle: 90deg)), text(font: faces.sans, size: scale(-2.5), weight: 600, upper(n)))))
+#grid(columns: (1fr,) * 10, gutter: 0.3em, ..ramps.pairs().filter(((n, _)) => n != "black").map(((n, g)) => stack(spacing: 0.4em, rect(width: 100%, height: 9em, radius: 0.2em, fill: gradient.linear(..g.stops(), space: g.space(), angle: 90deg)), text(font: faces.sans, size: scale(-2.5), weight: 600, upper(n)))))
 #v(2em)
 
 = Color
@@ -53,16 +53,17 @@ Each ramp is a straight line through OKLCH from black to white at one hue. A col
     bar(g)
     for (label, t) in at {
       place(dx: t - 0.3em, dy: -1.15em, circle(radius: 0.3em, fill: g.sample(t), stroke: 0.1em + white))
-      place(dx: t - 2em, dy: 0.15em, box(width: 4em, align(center, text(size: scale(-2.5), fill: palette.ink-muted)[#label #str(int(t / 1%))%])))
+      place(dx: t - 2.5em, dy: 0.15em, box(width: 5em, align(center, text(size: scale(-2.5), fill: palette.ink-muted)[#label #str(int(t / 1%))%])))
     }
   })
 })
-#ramp-row("maroon: identity", ramps.maroon, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%), ("line", 80%), ("rule", 90%), ("fill", 96%)))
+#ramp-row("maroon: identity", ramps.maroon, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%), ("line", 80%), ("rule", 90%), ("fill", 97%)))
+#ramp-row("sienna: an identity in brownish orange", ramps.sienna, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%), ("line", 80%), ("rule", 90%), ("fill", 97%)))
 #ramp-row("blue: observed, algorithms", ramps.blue, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%)))
 #ramp-row("rose: acted, theorems", ramps.rose, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%)))
 #ramp-row("teal: valued, results", ramps.teal, (("ink", 15%), ("strong", 30%), ("medium", 45%), ("soft", 60%)))
 #ramp-row("orange: warnings (interpolated in OKLab)", ramps.orange, (("ink", 15%), ("strong", 30%), ("medium", 45%)))
-#caption[Two rules place every color. Ink tones sit on a 15% grid: ink, strong, medium, soft. Quiet tones sit at 80, 90 and 96% and carry at most `quietness × (1 − lightness)` of chroma, so every ramp's washes are equally quiet.]
+#caption[Three rules place every color. Ink tones sit on a 15% grid: ink, strong, medium, soft. Running text sits at medium or deeper, for 4.5:1 contrast. Quiet tones sit at 80, 90 and 97% and carry at most `quietness × (1 − lightness)` of chroma, so every ramp's washes are equally quiet.]
 
 == The palette
 #grid(columns: (1fr,) * 5, row-gutter: 0.8em, ..palette.pairs().map(((name, c)) => chip(c, name)))
@@ -85,7 +86,7 @@ Fixed order, never cycled. Neighbors alternate soft (60%) and medium (45%), so t
 
 == The fulfillment scale
 #swatch(fulfillment, width: 100%, height: 1.4em, samples: 160)
-#caption[`fulfillment`: bad to good in five OKLCH stops, the identity's crimson through copper, amber and green to the `valued` teal. Low is urgent. Every sample is dark enough for text, and the ends part by lightness and blue, not only by red and green.]
+#caption[`fulfillment`: bad to good in five OKLCH stops, the identity's crimson through copper, amber and green to the `valued` teal. Low is urgent. Every sample keeps 3:1 on paper, and the ends part by lightness and blue, not only by red and green.]
 
 = Type and marks
 #grid(columns: (1fr, 1fr), gutter: 1.5em,
