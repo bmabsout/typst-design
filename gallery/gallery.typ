@@ -128,7 +128,7 @@ Reinforcement Learning#diamond()Embedded Systems#diamond()Type Theory#diamond()C
 #let k = cv-kit(cv-style(owner: "Author A."))
 #block(width: 100%, {
   set text(font: faces.garamond)
-  (k.section-list)("Education", (
+  (k.section)("Education", (
     (k.entry)((k.entry-heading)(l: [Ph.D. in Computer Science], m: [A University], r: [2019 -- 2024]), [Dissertation: _A Title in Italic_ #(k.links)((k.labeled)("dissertation", link("https://example.com")[example.com/thesis]), (k.labeled)("code", link("https://example.com")[example.com/code]))]),
     (k.entry)((k.entry-heading)(l: [B.S. in Mathematics], m: [Another University], r: [2015 -- 2019]), []),
   ))
@@ -145,7 +145,7 @@ Reinforcement Learning#diamond()Embedded Systems#diamond()Type Theory#diamond()C
 #block(width: 100%, {
   set text(font: faces.garamond)
   let k = cv-kit(cv-style(ramp: ramps.blue, owner: "Author A."))
-  (k.section-list)("Publications", ((k.publication-entry)((authors: "Author A.* and Author B.* and Author C.", title: [A Paper Title Set in Italic], venue: "Venue", year: 2024, doi: [10.0000/example], citations: 12, extra_links: ()), [[1]]),))
+  (k.section)("Publications", ((k.publication-entry)((authors: "Author A.* and Author B.* and Author C.", title: [A Paper Title Set in Italic], venue: "Venue", year: 2024, doi: [10.0000/example], citations: 12, extra_links: ()), [[1]]),))
 })
 
 == FPL marks

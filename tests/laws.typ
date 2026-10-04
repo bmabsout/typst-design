@@ -153,3 +153,22 @@
 #frame[A bare frame.] See @framed.
 #pie(0.42) #price(none) #trace((0.2, 0.4, none, 0.6, 0.8), back: 2, ahead: 2)
 #sep[a][b][c] #capsule-rule()
+
+// 9. A span marks only where it really starts and ends. Spans that share a
+//    merge key and follow one another on a page share one closing mark,
+//    a page break between them gives each its own, and a span with no key
+//    always closes.
+#let ends(key) = query(span-end).filter(m => m.value == key).len()
+#let mark = line(length: 2em)
+#span(merge: "law-a", open: mark, close: mark)[one]
+#span(merge: "law-a", open: mark, close: mark)[two]
+#span(merge: "law-a", open: mark, close: mark)[three]
+#span(merge: "law-b", open: mark, close: mark)[four]
+#pagebreak()
+#span(merge: "law-b", open: mark, close: mark)[five]
+#span(open: mark, close: mark)[six]
+#context {
+  assert.eq(ends("law-a"), 1, message: "merged spans on one page share one close")
+  assert.eq(ends("law-b"), 2, message: "a page break between spans gives each a close")
+  assert.eq(query(span-start).filter(m => m.value == "law-a").len(), 3)
+}

@@ -23,6 +23,7 @@ A design system for documents, built from a few hand-picked rules and written in
 - [Installation](#installation)
 - [Color](#color)
 - [Marks](#marks)
+- [Spans](#spans)
 - [Callouts](#callouts)
 - [Templates](#templates)
 - [Fulfillment marks](#fulfillment-marks)
@@ -117,6 +118,25 @@ Three rules decide where each job samples a ramp:
 
 The **diamond** is the only inline separator: a rounded 0.4em square turned 45°, filled `mark-fill` and outlined `mark-line`. It scales with the text.
 
+## Spans
+
+A span is a stretch of the document that may break across pages and is marked only where it really starts and ends. A page break is not a boundary. Callouts and CV sections are both spans: a callout's rounded caps and a section's rules are its opening and closing marks.
+
+```typst
+#span(
+  open: [#line(length: 100%) *Results*],  // kept with the first line
+  close: line(length: 100%),               // placed after the last line, takes no room
+  close-at: (dy: 1em),
+  merge: "results",                        // neighbors with this key share one boundary
+)[…]
+```
+
+- **The opening mark** is kept with the first line, so it never stands alone at the foot of a page.
+- **The closing mark** is placed, so it takes no room, and drawing it or not cannot move the layout it was measured from.
+- **`merge`**: spans that share a key and follow one another share a boundary. A closing mark is drawn only when the next span starts on another page, or there is none. Two sections on one page share one rule, and a section that ends at the foot of a page keeps its own.
+- **`edge`** is the other style: a stroke drawn as the top and bottom of every page piece, so each page starts and ends on it. Spans set edge to edge (`spacing: 0pt`) share one.
+- **The rest** (`fill`, `stroke`, `inset`, `width`) styles the region the body sits in, on every page it crosses.
+
 ## Callouts
 
 ```typst
@@ -147,14 +167,14 @@ Use `callouts(..)` to configure the family, for example `callouts(title-size: 14
 
 Each template is a style dictionary, a kit of functions built from it, and a page rule.
 
-**CV.** Pass `ramp` to recolor the whole CV:
+**CV.** Pass `ramp` to recolor the whole CV. A section is a span: its title stays with its first entry, and it breaks between entries. `rules` picks where its rules fall: `"ends"` (the default) puts one where a section really starts and ends, and `"pages"` puts one at every page edge.
 
 ```typst
-#let style = cv-style(owner: "Author A.")  // the owner's name is bolded in author lists
+#let style = cv-style(owner: "Author A.", rules: "ends")  // the owner's name is bolded in author lists
 #let kit = cv-kit(style)
 #show: cv-page.with(style: style)
 
-#(kit.section-list)("Education", (
+#(kit.section)("Education", (
   (kit.entry)((kit.entry-heading)(l: [Ph.D.], m: [A University], r: [2019 -- 2024]), [Dissertation: _…_]),
 ))
 ```
@@ -193,13 +213,14 @@ A fulfillment is a value in [0, 1] saying how well a requirement is met. Low is 
 
 ## API overview
 
-Everything is exported flat, and also by module: `colors`, `typography`, `marks`, `callout`, `frames`, `rlmath`, `icons`, `fpl`, `figures` and `templates`. Names that would shadow Typst's own (`state`, `document`) are only reachable through their module.
+Everything is exported flat, and also by module: `colors`, `typography`, `marks`, `spans`, `callout`, `frames`, `rlmath`, `icons`, `fpl`, `figures` and `templates`. Names that would shadow Typst's own (`state`, `document`) are only reachable through their module.
 
 | Module | Exports |
 | --- | --- |
 | color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `readable`, `text-needs`, `reads`, `apca`, `contrast`, `as-text`, `legibility`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
+| span | `span`, `span-start`, `span-end` |
 | callouts | `callouts`, `callout-rules`, `flow-block`, `frame`, `frame-rules`, `frame-layer`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |
 | math | `rlmath.state` / `action` / `reward`, `rl`, `pmean`, `fbox`, `loss`, `expect`, `policy`, `make-abbrv`, `abbreviations`, `abbreviation-table` |
 | fulfillment | `fulfillment-color`, `pie`, `price`, `trace`, `percent`, `state-of` |

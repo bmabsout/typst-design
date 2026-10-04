@@ -5,6 +5,7 @@
 
 #import "color.typ": ramps, tones, classic-tones
 #import "marks.typ": capsule
+#import "span.typ": span
 
 /// A titled block whose bottom edge fades out, so a callout that breaks
 /// across a page reads as continuing. The title is kept with the content.
@@ -89,28 +90,29 @@
   // Spacing outside the caps: `above`/`below` would vanish at the start of
   // a container (a figure, a grid cell), so the gap is padding.
   v(spacing, weak: true)
-  std.pad(top: radius, bottom: radius, block(
-    breakable: true,
+  // A span whose region is the wash and the side strokes, and whose marks
+  // are the rounded caps: the top cap opens it, the bottom cap closes it,
+  // and a page cut is simply open.
+  let cap-box(top) = box(width: 100% + 2 * inset, cap(top))
+  std.pad(top: radius, bottom: radius, span(
     width: 100%,
     fill: fill,
     stroke: (x: stroke),
     inset: (x: inset, y: 0pt),
     spacing: 0pt,
+    open: {
+      place(dx: -inset, dy: -radius, cap-box(true))
+      v(pad)
+      if title != none {
+        title
+        v(title-gap)
+      }
+    },
+    close: cap-box(false),
+    close-at: (dx: -inset),
     {
-      // The top cap, the padding and the title stick to the first line, so a
-      // page never ends on a cap with nothing under it. A fragment left
-      // empty by that move draws neither fill nor stroke.
-      block(sticky: true, spacing: 0pt, width: 100%, {
-        place(dx: -inset, dy: -radius, box(width: 100% + 2 * inset, cap(true)))
-        v(pad)
-        if title != none {
-          title
-          v(title-gap)
-        }
-      })
       content
       v(pad)
-      place(dx: -inset, box(width: 100% + 2 * inset, cap(false)))
     },
   ))
   v(spacing, weak: true)

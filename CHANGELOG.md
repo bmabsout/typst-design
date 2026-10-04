@@ -7,6 +7,14 @@ All notable changes to this package are recorded here. The format follows
 ## [Unreleased]
 
 ### Added
+- `span`: a stretch of the flow marked only where it really starts and ends.
+  The opening mark stays with the first line, the closing mark is placed (it
+  takes no room), spans sharing a `merge` key share a boundary, and `edge`
+  marks every page instead. Callouts (`flow-block`) and CV sections are built
+  on it, and the laws count its closing marks.
+- `cv-style(rules:)`: `"ends"` (a rule where a section starts and ends) or
+  `"pages"` (a rule at every page edge). The kit's `section` is the one
+  section builder, and `flow` lays out items that break between them.
 - `flow-block`: a rounded callout block that breaks across pages, rounded only
   where it really starts and ends. It is the default callout engine.
 - `callout-rules`: the document rule that lets callout figures break.
