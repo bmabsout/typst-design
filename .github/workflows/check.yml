@@ -1,0 +1,17 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  laws:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: Laws and examples
+        run: nix flake check
+      - name: Gallery
+        run: nix build .#gallery

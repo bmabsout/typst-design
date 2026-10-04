@@ -1,4 +1,4 @@
-// FPL MARKS — a fulfillment in [0, 1] drawn as colour, a pie and a trace.
+// FPL MARKS: a fulfillment in [0, 1] drawn as color, a pie and a trace.
 //
 // The marks of Prodrome's Typst package (`prodrome/typst/lib.typ`), drawn
 // in the identity's own bad-to-good scale
@@ -7,11 +7,11 @@
 
 #import "color.typ": fulfillment
 
-/// The colour of a value in [0, 1]: a sample of the one scale.
-#let colour(value) = fulfillment.sample(value * 100%)
+/// The color of a value in [0, 1]: a sample of the one scale.
+#let fulfillment-color(value) = fulfillment.sample(value * 100%)
 
 /// The scale laid bottom (0) to top (1) over its container, so a stroke in a
-/// box whose height is the 0–100% range is `colour(v)` at its own height.
+/// box whose height is the 0–100% range is `fulfillment-color(v)` at its own height.
 #let upward(alpha: 100%) = gradient.linear(
   ..fulfillment.stops().map(((c, at)) => (c.transparentize(100% - alpha), at)),
   space: fulfillment.space(),
@@ -19,18 +19,18 @@
   relative: "parent",
 )
 
-/// No value at all is not a zero, so it is never a colour of the scale.
+/// No value at all is not a zero, so it is never a color of the scale.
 #let unpriced = luma(155)
 #let ink = luma(34)
 
 /// The words for a value: "Problem" below 0.5, "Watch" below 0.7, "Fine"
-/// from there, "Unpriced" for none. Words only; the colour is `colour`'s.
+/// from there, "Unpriced" for none. Words only. The color is `fulfillment-color`'s.
 #let state-of(value) = if value == none or value == "absent" { "Unpriced" } else if value < 0.5 {
   "Problem"
 } else if value < 0.7 { "Watch" } else { "Fine" }
 
-/// `0.42` as `42%`; `∅` for absent, `—` for none.
-#let percent(value) = if value == "absent" { "∅" } else if value == none { "—" } else {
+/// `0.42` as `42%`, `∅` for absent, `–` for none.
+#let percent(value) = if value == "absent" { "∅" } else if value == none { "–" } else {
   str(int(calc.round(value * 100))) + "%"
 }
 
@@ -40,11 +40,11 @@
 #let _frame(body) = if _html { context if std.target() == "html" { box(std.html.frame(body)) } else { body } } else { body }
 
 /// THE PIE: a value's share of a disc from twelve o'clock clockwise, on a
-/// faint track of its own colour, outlined thin in it. Sized in `em` so it
+/// faint track of its own color, outlined thin in it. Sized in `em` so it
 /// sits beside text at any size.
 #let pie(value, size: 0.82em, edge: 6.7%) = context {
   let size = size.to-absolute()
-  let c = colour(value)
+  let c = fulfillment-color(value)
   let r = size / 2
   let edge = size * (edge / 100%)
   let at(angle) = (r + r * calc.sin(angle), r - r * calc.cos(angle))
@@ -76,9 +76,9 @@
   runs.filter(run => run.len() > 0)
 }
 
-/// THE TRACE: a value over the days around now, one thick line coloured at
+/// THE TRACE: a value over the days around now, one thick line colored at
 /// every point by its own value, in a 0–100% frame with a dashed half. The
-/// past is faded; now is a thin ink line and a dot. `values` are evenly
+/// past is faded, and now is a thin ink line and a dot. `values` are evenly
 /// spaced from `back` days before now to `ahead` days after, `none` a gap.
 /// Every inner length is a share of `height`, so the mark scales whole.
 #let trace(values, at: none, back: 15, ahead: 15, width: 25em, height: 9.8em) = context {
@@ -95,7 +95,7 @@
   let thick = 3 * u
   let line-of(run, paint) = if run.len() == 1 {
     let (x, y) = point(run.first())
-    place(dx: x - thick / 2, dy: y - thick / 2, circle(radius: thick / 2, fill: colour(run.first().at(1))))
+    place(dx: x - thick / 2, dy: y - thick / 2, circle(radius: thick / 2, fill: fulfillment-color(run.first().at(1))))
   } else {
     place(curve(
       stroke: (paint: paint, thickness: thick, cap: "round", join: "round"),
@@ -122,7 +122,7 @@
     let v = values.at(now)
     if v != none {
       let r = 3.2 * u
-      place(dx: x - r, dy: top + h * (1 - v) - r, circle(radius: r, fill: colour(v), stroke: 0.8 * u + white))
+      place(dx: x - r, dy: top + h * (1 - v) - r, circle(radius: r, fill: fulfillment-color(v), stroke: 0.8 * u + white))
     }
     let dy = top + h + 4 * u
     let cell = 40 * u

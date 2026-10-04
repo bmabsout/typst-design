@@ -1,17 +1,17 @@
-// STATEMENT — a research or teaching statement, or a letter: one justified
-// serif column, sections in the primary over a capsule rule, a centred title
+// STATEMENT: a research or teaching statement, or a letter. One justified
+// serif column, sections in the primary over a capsule rule, a centered title
 // joined to the author's name by a diamond.
 
 #import "../color.typ": palette
 #import "../type.typ": faces
 #import "../marks.typ": capsule-rule, diamond as _diamond
 
-/// "Name ◆ Title", centred and bold in the primary.
+/// "Name ◆ Title", centered and bold in the primary.
 #let title-line(author, title, size: 16pt, primary: palette.primary, diamond: _diamond) = align(center)[
   #text(size: size, weight: "bold", fill: primary)[#author#diamond()#title]
 ]
 
-/// The page. `heading-size` sets both section levels; level 2 is the
+/// The page. `heading-size` sets both section levels, and level 2 is the
 /// `secondary` (the ramp's heading-2 sample) at medium weight. `rule` is drawn above each
 /// level-1 section.
 #let statement(
@@ -26,7 +26,7 @@
   title-size: 16pt,
   primary: palette.primary,
   secondary: palette.secondary,
-  rule: capsule-rule(paint: palette.rule-soft),
+  rule: capsule-rule(paint: palette.rule),
   diamond: _diamond,
   margin: (x: 1in, y: 1in),
   lift: -3em,

@@ -1,4 +1,4 @@
-// typst-design — Bassel El Mabsout's design system for Typst.
+// typst-design: Bassel El Mabsout's design system for Typst.
 //
 //   #import "@local/typst-design:0.1.0": *
 //
@@ -29,20 +29,20 @@
   document: working,
 )
 
-// Colour.
-#import "src/color.typ": ramp, hues, ramps, ref-ramp, stops, mirror, shade, tones, roles, palette, fulfillment, chart, swatch
+// Color.
+#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, tones, classic-tones, roles, palette, fulfillment, chart, swatch
 // Type.
 #import "src/type.typ": faces, ratio, scale, font-options, label-text, minor
 // Marks.
 #import "src/marks.typ": capsule, capsule-rule, diamond, sep
 // Callouts.
-#import "src/callouts.typ": seamless-block, callouts, note, theorem, algorithm, notice
+#import "src/callouts.typ": seamless-block, flow-block, callouts, callout-rules, note, theorem, algorithm, notice
 // Math.
 #import "src/math.typ": observed, acted, valued, rl, pmean, fbox, vecand, vecor, loss, expect, policy, sigmoid, stack-math, make-abbrv, abbreviations, abbreviation-table
 // Icons.
 #import "src/icons.typ": fa, icon
 // FPL marks.
-#import "src/fpl.typ": colour, percent, price, pie, trace, state-of
+#import "src/fpl.typ": fulfillment-color, percent, price, pie, trace, state-of
 // Templates.
 #import "src/templates/cv.typ": cv-style, cv-kit, cv-page
 #import "src/templates/resume.typ": resume-style, resume-kit, resume-page

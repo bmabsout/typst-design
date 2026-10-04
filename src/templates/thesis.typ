@@ -1,17 +1,17 @@
-// THESIS — a dissertation: front matter numbered in roman, chapters that
+// THESIS: a dissertation with front matter numbered in roman, chapters that
 // open on a new column with a capsule rule and a local contents, headings
-// that darken with rank along one ramp, references coloured like their
+// that darken with rank along one ramp, references colored like their
 // target, and Boston University's required pages.
 //
-// `thesis-style(..)` is the whole look as data; `make-template(style)`
+// `thesis-style(..)` is the whole look as data, and `make-template(style)`
 // returns the page builders and `assemble`, the show rule.
 
-#import "../color.typ": ramps, ref-ramp
+#import "../color.typ": ramps, ref-ramp, stops, jobs, quiet
 #import "../type.typ": font-options
 #import "../marks.typ": capsule-rule
 
-/// The colours a thesis is set in, by ramp. `compliance: "bu"` sets the
-/// headings black, as Boston University's thesis office requires; the
+/// The colors a thesis is set in, by ramp. `compliance: "bu"` sets the
+/// headings black, as Boston University's thesis office requires. The
 /// design is otherwise unchanged.
 #let thesis-colors(compliance: none, primary: ramps.maroon) = (
   primary: if compliance == "bu" { ramps.black } else { primary },
@@ -36,9 +36,9 @@
   heading: (
     text: heading,
     levels: (
-      (text: (size: 1.8em, weight: "bold", fill: colors.primary.sample(30%)), spacing: (above: 2em, below: 2em)),
-      (text: (size: 1.5em, weight: "bold", fill: colors.primary.sample(45%)), spacing: (above: 2em, below: 1.5em)),
-      (text: (size: 1.2em, weight: "bold", fill: colors.primary.sample(60%)), spacing: (above: 2em, below: 1.5em)),
+      (text: (size: 1.8em, weight: "bold", fill: colors.primary.sample(jobs.heading-1)), spacing: (above: 2em, below: 2em)),
+      (text: (size: 1.5em, weight: "bold", fill: colors.primary.sample(jobs.heading-2)), spacing: (above: 2em, below: 1.5em)),
+      (text: (size: 1.2em, weight: "bold", fill: colors.primary.sample(jobs.heading-3)), spacing: (above: 2em, below: 1.5em)),
       (text: (size: 1em, weight: "bold", fill: black)),
     ),
   ),
@@ -49,7 +49,7 @@
 #let heading-style(style, level: 0) = style.heading.text + style.heading.levels.at(level).text
 
 /// The rule under a chapter title and around the contents.
-#let thesis-rule(style) = capsule-rule(paint: style.colors.primary.sample(90%), period: 6.1pt)
+#let thesis-rule(style) = capsule-rule(paint: quiet(style.colors.primary, stops.rule), period: 6.1pt)
 
 /// The chapter's own contents: its sections and subsections.
 #let local-outline() = context {
@@ -148,14 +148,14 @@
       }
     })
 
-    // A reference is small caps, coloured like the heading it names.
+    // A reference is small caps, colored like the heading it names.
     show ref: it => {
       show text: it => smallcaps(lower(it))
       if it.element != none and it.element.func() == heading {
         set text(fill: heading-style(style, level: it.element.level - 1).fill)
         it
       } else {
-        set text(fill: style.colors.ref.sample(60%))
+        set text(fill: style.colors.ref.sample(jobs.ref))
         it
       }
     }
@@ -183,7 +183,7 @@
       list_of_figures,
       list_of_tables,
     )))
-    // Contents entries take their heading's colour.
+    // Contents entries take their heading's color.
     show outline.entry: it => {
       set text(..heading-style(style, level: it.level - 1), size: 1em)
       box(it)

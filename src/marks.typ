@@ -1,4 +1,4 @@
-// MARKS — structure comes from two marks and space, never from boxes.
+// MARKS: structure comes from two marks and space, never from boxes.
 //
 // The capsule rule divides: a thick dotted line with round caps, so each dot
 // reads as a short capsule. The diamond joins: the only inline separator.
@@ -15,7 +15,7 @@
 )
 
 /// A full-width capsule rule. The default paint is the identity's `rule`
-/// tone; the thesis and the CV each pass the tone their pages were set in.
+/// tone. The thesis and the CV each pass the tone their pages were set in.
 #let capsule-rule(paint: palette.rule, thickness: 3pt, period: 6pt, length: 100%) = line(
   length: length,
   stroke: capsule(paint, thickness: thickness, period: period),

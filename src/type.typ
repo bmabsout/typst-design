@@ -1,8 +1,8 @@
-// TYPE — the faces, the scale, and the presets each document has used.
+// TYPE: the faces, the scale, and the presets each document has used.
 //
 // One serif carries every sentence (Source Serif 4). Crimson Pro sets names
-// and titles at display sizes; Source Sans 3 sets short UPPERCASE labels.
-// The CV family has set EB Garamond with Libertinus Sans labels; those faces
+// and titles at display sizes. Source Sans 3 sets short UPPERCASE labels.
+// The CV family has set EB Garamond with Libertinus Sans labels. Those faces
 // are kept as a named family rather than hard-coded in the CV.
 
 /// Font stacks: each is a list, so a face the machine lacks falls through.
@@ -21,13 +21,13 @@
 )
 
 /// The type scale: every size is `base` times 1.2 to the `step`.
-/// `scale(0)` is the body size; headings sit at steps 1–3, display at 5–7,
+/// `scale(0)` is the body size. Headings sit at steps 1–3, display at 5–7,
 /// labels at −1 and −2.
 #let ratio = 1.2
 #let scale(step, base: 1em) = base * calc.pow(ratio, step)
 
 /// Body-text presets, each a face at the size where its x-height matches
-/// the others' — swap one for another and a page keeps its colour.
+/// the others'. Swap one for another and a page keeps its color.
 #let font-options = (
   libertinus_serif: (font: "Libertinus Serif", size: 12.4pt, weight: 400),
   new_computer_modern: (font: "New Computer Modern", size: 11.5pt),

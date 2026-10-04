@@ -1,4 +1,4 @@
-// DOCUMENT — a plain working document (notes, lists, reports) in the CV's
+// DOCUMENT: a plain working document (notes, lists, reports) in the CV's
 // voice: a serif body, sans capitals over a capsule rule for sections, one
 // accent for titles, links and ornaments.
 
@@ -13,7 +13,7 @@
 )
 
 /// The rule a section title stands on.
-#let doc-rule = capsule-rule(paint: palette.rule-soft)
+#let doc-rule = capsule-rule(paint: palette.rule)
 
 /// A section title not tied to a heading: sans capitals in the accent.
 #let section-title(body, size: 13pt, fill: palette.primary, font: doc-fonts.sans) = {
@@ -40,12 +40,12 @@
   text(size: 0.85em, smallcaps(lower(right))),
 )
 
-/// An emphasised phrase in the accent.
+/// An emphasized phrase in the accent.
 #let accent(body) = text(fill: palette.primary, style: "italic", body)
 
 /// The show rule: `#show: document.with(title: [..])`.
-///   level 1  the document's title: large serif in the accent, a rule under;
-///   level 2  a section: sans capitals over the rule;
+///   level 1  the document's title: large serif in the accent, a rule under.
+///   level 2  a section: sans capitals over the rule.
 ///   level 3  a subsection: sans, medium, the secondary.
 #let document(body, size: 11pt, title: none, fonts: doc-fonts, paper: "a4", ink: oklch(19.77%, 0.007, 17.5deg)) = {
   let primary = palette.primary
@@ -63,7 +63,7 @@
   show emph: set text(fill: palette.secondary)
   show raw: set text(font: fonts.mono, size: 0.9em)
   show strong: set text(fill: ink)
-  // A link out is underlined in the accent; a link within the document reads
+  // A link out is underlined in the accent. A link within the document reads
   // as the text it is.
   show link: it => if type(it.dest) == str { text(fill: primary, underline(it)) } else { it }
   show heading.where(level: 1): it => block(above: 1.5em, below: 1.2em, sticky: true, {
