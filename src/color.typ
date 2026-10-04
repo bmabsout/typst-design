@@ -205,7 +205,7 @@
 ///   line. Lc 90 and 7:1 (WCAG AAA).
 /// - `body`: bold labels at body size, regular text from 18px. Lc 75, 7:1.
 /// - `subhead`: bold from 16px, regular from 24px. Lc 60, 4.5:1.
-/// - `headline`: bold from 24px, regular from 32px. Lc 45, 3:1.
+/// - `headline`: bold from 24px, regular from 36px. Lc 45, 3:1.
 #let text-needs = (
   small: (lc: 90, ratio: 7),
   body: (lc: 75, ratio: 7),
