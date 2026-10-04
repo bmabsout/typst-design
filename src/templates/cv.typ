@@ -8,7 +8,7 @@
 
 #import "../color.typ": palette, ramps, ramp-from, quiet, stops, readable, text-needs
 #import "../type.typ": faces
-#import "../marks.typ": capsule-rule, diamond as _diamond
+#import "../marks.typ": capsule, capsule-rule, diamond as _diamond
 #import "../icons.typ": fa
 
 /// The CV's style. Colors are the identity's ramp samples, and faces default to
@@ -88,7 +88,12 @@
   /// with the entry's text.
   let links(..items) = [\ #items.pos().join([#diamond()])]
 
-  /// A title kept with its first item. The rest may break.
+  /// Items one after another, each kept whole, the list free to break
+  /// between them. (A `stack` never breaks, so a long one leaves a page
+  /// empty and starts on the next.)
+  let flow(spacing, items) = items.map(item => block(breakable: false, spacing: 0em, item)).join(v(spacing))
+
+  /// A title kept with its first item. The rest may break between items.
   let titled-list(title, items, inset, spacing) = {
     set block(spacing: 0em)
     block(breakable: false)[
@@ -99,39 +104,50 @@
     ]
     if items.len() > 1 {
       v(spacing)
-      pad(left: inset.left, stack(spacing: spacing, ..items.slice(1)))
+      pad(left: inset.left, flow(spacing, items.slice(1)))
     }
   }
 
+  /// A title kept with the start of its content, which may break.
   let titled-block(title, content, inset: none) = {
-    set block(spacing: 0em, breakable: false)
+    set block(spacing: 0em)
     set par(leading: 0em)
-    stack(spacing: 0em, title, block(inset: inset, content))
+    block(sticky: true, breakable: false, title)
+    block(inset: inset, breakable: true, content)
   }
 
-  /// The first child stays with `first`, the last with `last`, and the middle
-  /// may break.
-  let stack-unbreakable(first, last, spacing, inset, children) = if children.len() == 1 {
-    block(breakable: false)[#first#block(inset: inset)[#children.first()]#last]
-  } else {
-    block(breakable: true, sticky: true)[#first#block(inset: inset)[#children.first()]]
-    v(spacing, weak: true)
-    children.slice(1, -1).map(child => block(inset: (left: inset.left))[#child]).intersperse(v(spacing, weak: true)).reduce((x, y) => x + y)
-    v(spacing, weak: true)
-    block(breakable: false)[#block(inset: (left: inset.left))[#children.last()]#last]
+  /// `first` (a section's title) sticks to the first child. Every child may
+  /// break between its own items, so a long section starts where it is and
+  /// continues on the next page instead of leaving a page empty.
+  let stack-unbreakable(first, last, spacing, inset, children) = {
+    block(sticky: true, breakable: false, first)
+    block(inset: inset)[#children.first()]
+    for child in children.slice(1) {
+      v(spacing, weak: true)
+      block(inset: (left: inset.left))[#child]
+    }
+    last
   }
 
-  /// A section: a capsule rule, the UPPERCASE title, the items, a rule.
-  let section-list(title, items) = stack-unbreakable(
+  /// A section: the UPPERCASE title and its items, between two capsule
+  /// rules drawn as the block's own top and bottom edges. Sections sit edge
+  /// to edge, so one section's bottom rule lies on the next one's top rule
+  /// and they read as one. A section that breaks across pages gets a rule on
+  /// each side of the break, so every page starts and ends on a rule.
+  let section-list(title, items) = block(
+    width: 100%,
+    breakable: true,
+    spacing: 0em,
+    stroke: (top: capsule(style.colors.rule), bottom: capsule(style.colors.rule)),
+    inset: (y: style.spacing.section),
     {
-      rule
-      v(style.spacing.section)
-      text(..style.section, upper(title))
+      block(sticky: true, breakable: false, spacing: 0em, text(..style.section, upper(title)))
+      block(inset: style.insets.section, spacing: 0em)[#items.first()]
+      for item in items.slice(1) {
+        v(style.spacing.section)
+        block(inset: (left: style.insets.section.left), spacing: 0em)[#item]
+      }
     },
-    v(style.spacing.section) + rule,
-    style.spacing.section,
-    style.insets.section,
-    items,
   )
 
   let sections(..sections) = {
@@ -159,7 +175,8 @@
     smallcaps(lower(r))
   }
 
-  let entry(heading, body) = {
+  /// One entry, kept whole on a page.
+  let entry(heading, body) = block(breakable: false, {
     set text(size: style.entry.size, font: style.fonts.body)
     titled-block(
       heading,
@@ -168,9 +185,9 @@
       ],
       inset: if body != [] { style.insets.inner } else { (left: 0em, top: 0em) },
     )
-  }
+  })
 
-  let entries(entries) = stack(spacing: style.spacing.element, ..entries.map(entry => block(breakable: false, entry)))
+  let entries(entries) = flow(style.spacing.element, entries)
 
   let review-venue-entry(name, papers) = {
     name

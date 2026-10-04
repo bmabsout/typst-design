@@ -47,6 +47,15 @@ All notable changes to this package are recorded here. The format follows
   saturated sample looks lighter than it measures. `palette.link` is new.
 
 ### Fixed
+- CV sections no longer leave a page nearly empty. A list of entries was a
+  `stack`, which never breaks, and a section's first subsection was held to
+  the rest of the section, so a long section moved whole to the next page.
+  Entries now stay whole while lists break between them, and only a title
+  sticks to what follows it.
+- A CV section's rules are its block's top and bottom edges. Sections sit
+  edge to edge, so the rule between two reads as one, and a section that
+  breaks gets a rule on each side of the break: every page starts and ends
+  on a rule.
 - `flow-block` no longer leaves its rounded top edge alone at the bottom of a
   page when the callout starts there. The top edge, the padding and the title
   now stay with the first line of text.
