@@ -11,6 +11,7 @@
 #import "src/type.typ" as typography
 #import "src/marks.typ" as marks
 #import "src/callouts.typ" as callout
+#import "src/span.typ" as spans
 #import "src/frames.typ" as frames
 #import "src/math.typ" as rlmath
 #import "src/icons.typ" as icons
@@ -36,6 +37,8 @@
 #import "src/type.typ": faces, ratio, scale, font-options, label-text, minor
 // Marks.
 #import "src/marks.typ": capsule, capsule-rule, diamond, sep
+// Spans: a stretch of the flow marked only where it really starts and ends.
+#import "src/span.typ": span, span-start, span-end
 // Callouts.
 #import "src/callouts.typ": seamless-block, flow-block, callouts, callout-rules, note, theorem, algorithm, notice
 #import "src/frames.typ": frame, frame-layer, frame-rules
