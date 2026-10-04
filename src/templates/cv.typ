@@ -10,6 +10,7 @@
 #import "../type.typ": faces
 #import "../marks.typ": capsule, capsule-rule, diamond as _diamond
 #import "../icons.typ": fa
+#import "../span.typ": span
 
 /// The CV's style. Colors are the identity's ramp samples, and faces default to
 /// the CV family (EB Garamond, Libertinus Sans labels).
@@ -25,7 +26,9 @@
   sans: faces.libertinus-sans,
   icons: faces.icons,
   owner: none,
+  rules: "ends",
 ) = {
+  assert(rules in ("ends", "pages"), message: "rules is \"ends\" (a rule where a section starts and ends) or \"pages\" (a rule at every page edge)")
   // Every color is a sample or a quiet tone of one ramp: pass `ramp` (a
   // ramp, or one color to grow it from) to recolor the whole CV, or a
   // single named color to override just that one.
@@ -51,6 +54,7 @@
     shade-line: shade-line,
     rule: rule,
   ),
+  rules: rules,
   fonts: (body: body, sans: sans, icons: icons),
   spacing: (
     section: 1.2em, // between sections
@@ -116,44 +120,49 @@
     block(inset: inset, breakable: true, content)
   }
 
-  /// `first` (a section's title) sticks to the first child. Every child may
-  /// break between its own items, so a long section starts where it is and
-  /// continues on the next page instead of leaving a page empty.
-  let stack-unbreakable(first, last, spacing, inset, children) = {
-    block(sticky: true, breakable: false, first)
-    block(inset: inset)[#children.first()]
-    for child in children.slice(1) {
-      v(spacing, weak: true)
-      block(inset: (left: inset.left))[#child]
-    }
-    last
-  }
-
-  /// A section: a capsule rule over the UPPERCASE title, the items, and a
-  /// closing rule. The rules mark where a section really starts and ends:
-  /// the opening rule and title stay with the first item, a page break inside
-  /// a section draws no rule, and between two sections on one page a single
-  /// rule serves both. The closing rule is drawn only when the next section
-  /// starts on another page (or there is none). It is placed, so it takes no
-  /// room and cannot move what it measures.
-  let section-list(title, items) = {
-    [#block(sticky: true, breakable: false, {
-      rule
-      v(style.spacing.section)
-      text(..style.section, upper(title))
-    })<typst-design-cv-section>]
-    block(inset: style.insets.section)[#items.first()]
-    for item in items.slice(1) {
-      v(style.spacing.section, weak: true)
-      block(inset: (left: style.insets.section.left))[#item]
-    }
-    context {
-      let next = query(selector(<typst-design-cv-section>).after(here()))
-      if next == () or next.first().location().page() != here().page() {
-        place(dy: style.spacing.section, rule)
+  /// A section: the UPPERCASE title over the children, between capsule
+  /// rules, as a `span`. The title stays with the first child, and each
+  /// child may break between its own items. Where the rules fall is the
+  /// style's `rules`:
+  ///
+  /// - `"ends"`: a rule where the section really starts and ends. A page
+  ///   break inside the section draws none, and two sections on one page
+  ///   share one.
+  /// - `"pages"`: the rules are the section's top and bottom edges on every
+  ///   page, so a page always starts and ends on a rule, and sections set
+  ///   edge to edge share one.
+  let section(title, children) = {
+    let body = {
+      block(inset: style.insets.section)[#children.first()]
+      for child in children.slice(1) {
+        v(style.spacing.section, weak: true)
+        block(inset: (left: style.insets.section.left))[#child]
       }
     }
-    v(style.spacing.section)
+    let heading = text(..style.section, upper(title))
+    if style.at("rules", default: "ends") == "pages" {
+      span(
+        width: 100%,
+        spacing: 0pt,
+        inset: (y: style.spacing.section),
+        edge: capsule(style.colors.rule),
+        open: heading,
+        body,
+      )
+    } else {
+      span(
+        merge: "typst-design-cv-section",
+        open: {
+          rule
+          v(style.spacing.section)
+          heading
+        },
+        close: rule,
+        close-at: (dy: style.spacing.section),
+        body,
+      )
+      v(style.spacing.section)
+    }
   }
 
   let sections(..sections) = {
@@ -302,22 +311,6 @@
     ]
   }
 
-  /// A section that breaks gently: only the title is kept with what follows,
-  /// and every child may break, so long lists (awards, talks, courses) do
-  /// not leave half-empty pages. It looks the same as `section-list`.
-  let section(title, children) = {
-    let spacing = style.spacing.section
-    let inset = (left: style.insets.section.left)
-    block(breakable: false, sticky: true)[
-      #rule
-      #v(spacing)
-      #text(..style.section, upper(title))
-    ]
-    v(style.insets.section.top)
-    children.slice(0, -1).map(c => block(inset: inset, c) + v(spacing, weak: true)).join()
-    block[#block(inset: inset, children.last())#v(spacing)#rule]
-  }
-
   /// An entry heading that wraps cleanly: the date keeps its own column and
   /// wrapped lines get the entries' leading and a hanging indent.
   let wrapping-heading(l: none, m: none, r: none) = {
@@ -367,8 +360,7 @@
     links: links,
     titled-list: titled-list,
     titled-block: titled-block,
-    stack-unbreakable: stack-unbreakable,
-    section-list: section-list,
+    flow: flow,
     sections: sections,
     subsection: subsection,
     subsections-list: subsections-list,
