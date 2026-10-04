@@ -129,26 +129,32 @@
     last
   }
 
-  /// A section: the UPPERCASE title and its items, between two capsule
-  /// rules drawn as the block's own top and bottom edges. Sections sit edge
-  /// to edge, so one section's bottom rule lies on the next one's top rule
-  /// and they read as one. A section that breaks across pages gets a rule on
-  /// each side of the break, so every page starts and ends on a rule.
-  let section-list(title, items) = block(
-    width: 100%,
-    breakable: true,
-    spacing: 0em,
-    stroke: (top: capsule(style.colors.rule), bottom: capsule(style.colors.rule)),
-    inset: (y: style.spacing.section),
-    {
-      block(sticky: true, breakable: false, spacing: 0em, text(..style.section, upper(title)))
-      block(inset: style.insets.section, spacing: 0em)[#items.first()]
-      for item in items.slice(1) {
-        v(style.spacing.section)
-        block(inset: (left: style.insets.section.left), spacing: 0em)[#item]
+  /// A section: a capsule rule over the UPPERCASE title, the items, and a
+  /// closing rule. The rules mark where a section really starts and ends:
+  /// the opening rule and title stay with the first item, a page break inside
+  /// a section draws no rule, and between two sections on one page a single
+  /// rule serves both. The closing rule is drawn only when the next section
+  /// starts on another page (or there is none). It is placed, so it takes no
+  /// room and cannot move what it measures.
+  let section-list(title, items) = {
+    [#block(sticky: true, breakable: false, {
+      rule
+      v(style.spacing.section)
+      text(..style.section, upper(title))
+    })<typst-design-cv-section>]
+    block(inset: style.insets.section)[#items.first()]
+    for item in items.slice(1) {
+      v(style.spacing.section, weak: true)
+      block(inset: (left: style.insets.section.left))[#item]
+    }
+    context {
+      let next = query(selector(<typst-design-cv-section>).after(here()))
+      if next == () or next.first().location().page() != here().page() {
+        place(dy: style.spacing.section, rule)
       }
-    },
-  )
+    }
+    v(style.spacing.section)
+  }
 
   let sections(..sections) = {
     (..sections.pos()).reduce((x, y) => x + y)
