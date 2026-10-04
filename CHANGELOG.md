@@ -26,6 +26,10 @@ All notable changes to this package are recorded here. The format follows
   `publication-entry` take author arrays, an exact `owner`, an optional DOI
   and a note.
 - Examples (`examples/`), checked by `nix flake check`.
+- A rule-based dark theme: `paper-dark`, `dark-stop(t)` for text tones and
+  `quiet-dark(g, t)` for quiet ones. The laws check 4.5:1 on the dark ground.
+- `scripts/images.py` renders the README's images from the examples and the
+  gallery.
 
 ### Changed
 - The fulfillment scale now runs crimson → copper → amber → green → teal.

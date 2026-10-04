@@ -100,7 +100,7 @@ Three rules decide where each job samples a ramp:
 #text(fill: roles.valued)[reward]    // teal at the medium stop
 ```
 
-`palette` names the identity's colors (`primary`, `secondary`, `ink`, `ink-muted`, `mark-fill`, `rule`, `mark-line`). `chart` gives six categorical colors that alternate soft and medium, so neighbors differ in lightness as well as hue. A dark theme samples the same job at `mirror(t)`.
+`palette` names the identity's colors (`primary`, `secondary`, `ink`, `ink-muted`, `mark-fill`, `rule`, `mark-line`). `chart` gives six categorical colors that alternate soft and medium, so neighbors differ in lightness as well as hue. On the dark ground `paper-dark`, `dark-stop(t)` moves a text tone so it keeps the contrast it has on white, and `quiet-dark(ramp, t)` is the matching quiet tone. Text tones keep 4.5:1 there too.
 
 ![Gallery: ramps and palette](docs/images/gallery.png)
 
@@ -185,7 +185,7 @@ Everything is exported flat, and also by module: `colors`, `typography`, `marks`
 
 | Module | Exports |
 | --- | --- |
-| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
+| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
 | callouts | `callouts`, `callout-rules`, `flow-block`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |
@@ -206,9 +206,10 @@ Tested on Typst 0.13.1, 0.14.2 and 0.15.1, and it works with HTML export.
 $ nix develop                 # typst, tinymist, the faces, the package on its path
 $ nix flake check             # compiles tests/laws.typ and every example
 $ nix build .#gallery         # gallery/gallery.pdf
+$ python3 scripts/images.py   # the README's images in docs/images
 ```
 
-Compiling `tests/laws.typ` runs every `assert` in it. It checks that the ramps are their documented gradients stop for stop, that every sample obeys the two rules, that quiet tones stay quiet in every ramp, and that the fulfillment scale stays readable. Changes to the rules belong there first.
+Compiling `tests/laws.typ` runs every `assert` in it. It checks that the ramps are their documented gradients stop for stop, that every sample obeys the three rules, that text keeps its contrast on white and on the dark ground, that quiet tones stay quiet in every ramp, and that the fulfillment scale stays readable. Changes to the rules belong there first.
 
 ## License
 
