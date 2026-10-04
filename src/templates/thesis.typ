@@ -9,11 +9,14 @@
 #import "../color.typ": ramps, ref-ramp, stops, jobs, quiet
 #import "../type.typ": font-options
 #import "../marks.typ": capsule-rule
+#import "../callouts.typ": callouts
 
 /// The colors a thesis is set in, by ramp. `compliance: "bu"` sets the
-/// headings black, as Boston University's thesis office requires. The
-/// design is otherwise unchanged.
+/// headings black, as Boston University's thesis office requires, and keeps
+/// color off the front matter: the contents title, the abstract's heading
+/// and the box around its author block.
 #let thesis-colors(compliance: none, primary: ramps.maroon) = (
+  compliance: compliance,
   primary: if compliance == "bu" { ramps.black } else { primary },
   ref: ref-ramp,
   accent1: ramps.blue,
@@ -75,8 +78,15 @@
   content
 }
 
-#let make-template(style: thesis-style()) = {
+/// The page builders and the show rule for `style`. `framed` draws the
+/// abstract's author block: by default a box in the primary's tones, and
+/// nothing under `compliance: "bu"`.
+#let make-template(style: thesis-style(), framed: auto) = {
   let long_line = thesis-rule(style)
+  let plain = style.colors.at("compliance", default: none) == "bu"
+  let framed = if framed != auto { framed } else if plain { body => body } else {
+    callouts(classic: true, figure: false, note-ramp: style.colors.primary).note.with(engine: block.with(width: 100%))
+  }
 
   let assemble(
     doc,
@@ -171,7 +181,16 @@
       }
     }
 
-    roman-numbering(build_pages((
+    // Contents entries take their heading's color: everywhere, or only
+    // after the front matter under `compliance: "bu"`.
+    let entry-colors(body) = {
+      show outline.entry: it => {
+        set text(..heading-style(style, level: it.level - 1), size: 1em)
+        box(it)
+      }
+      body
+    }
+    let front = roman-numbering(build_pages((
       ignore-page-numbering(title_page),
       ignore-page-numbering(copyright_page),
       ignore-page-numbering(approval_page),
@@ -183,12 +202,8 @@
       list_of_figures,
       list_of_tables,
     )))
-    // Contents entries take their heading's color.
-    show outline.entry: it => {
-      set text(..heading-style(style, level: it.level - 1), size: 1em)
-      box(it)
-    }
-    arabic-numbering(build_pages((main, appendices, bibliography, vita)))
+    if plain { front } else { entry-colors(front) }
+    entry-colors(arabic-numbering(build_pages((main, appendices, bibliography, vita))))
   }
 
   // ----------------------------------------------- Boston University pages --
@@ -284,23 +299,27 @@
     align(center)[
       #heading(level: 3, numbering: none, outlined: false, text(fill: black, upper(thesis_title)))
       #v(1em)
-      #[
+      #framed[
         #set align(center)
         #text(size: 1.2em)[#upper(author_name)]\
         #school_name_for_abstract, #grs_name_for_abstract, #submission_year
         #major_professors
       ]
     ]
-    align(center)[
-      ABSTRACT
-    ]
+    if plain {
+      align(center)[
+        ABSTRACT
+      ]
+    } else {
+      align(center, heading(level: 2, numbering: none, outlined: false)[ABSTRACT])
+    }
     abstract_body_content
   }
 
   // ------------------------------------------------------- generic pages --
 
   let make_table_of_contents(title: "Contents", depth: 2) = {
-    heading(level: 2, numbering: none, outlined: false, text(size: 1em, fill: black, title))
+    heading(level: 2, numbering: none, outlined: false, if plain { text(size: 1em, fill: black, title) } else { title })
     long_line
     outline(title: none, indent: 3em, depth: depth)
     long_line

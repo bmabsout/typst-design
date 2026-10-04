@@ -34,6 +34,10 @@ All notable changes to this package are recorded here. The format follows
   `quiet-dark(g, t)` for quiet ones. The laws check 4.5:1 on the dark ground.
 - `scripts/images.py` renders the README's images from the examples and the
   gallery.
+- The thesis template's front matter follows `compliance`. Without it, the
+  contents title and entries take the heading colors, the abstract has its
+  heading and a box around its author block (`make-template(framed:)`), as
+  the dissertation was first set. `compliance: "bu"` keeps them plain.
 
 ### Fixed
 - `flow-block` no longer leaves its rounded top edge alone at the bottom of a
