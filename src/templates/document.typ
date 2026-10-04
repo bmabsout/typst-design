@@ -33,11 +33,11 @@
 )
 
 /// A line with its date (or other minor label) set right in small caps.
-#let dated(left, right) = grid(
+#let dated(body, date) = grid(
   columns: (1fr, auto),
   align: (left + bottom, right + bottom),
-  left,
-  text(size: 0.85em, smallcaps(lower(right))),
+  body,
+  text(size: 0.85em, smallcaps(lower(date))),
 )
 
 /// An emphasized phrase in the accent.

@@ -153,6 +153,7 @@
 #frame[A bare frame.] See @framed.
 #pie(0.42) #price(none) #trace((0.2, 0.4, none, 0.6, 0.8), back: 2, ahead: 2)
 #sep[a][b][c] #capsule-rule()
+#section-title[A section] #dated[A line][May 2026] #panel[A panel.] #accent[An accent.]
 
 // 9. A span marks only where it really starts and ends. Spans that share a
 //    merge key and follow one another on a page share one closing mark,
