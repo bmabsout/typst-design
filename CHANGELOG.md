@@ -55,6 +55,8 @@ All notable changes to this package are recorded here. The format follows
   saturated sample looks lighter than it measures. `palette.link` is new.
 
 ### Fixed
+- `dated` no longer fails on every call. Its parameters were named `left` and
+  `right`, which hid the alignments it sets (#7). It now takes `(body, date)`.
 - CV sections no longer leave a page nearly empty. A list of entries was a
   `stack`, which never breaks, and a section's first subsection was held to
   the rest of the section, so a long section moved whole to the next page.
