@@ -31,6 +31,11 @@ All notable changes to this package are recorded here. The format follows
 - `scripts/images.py` renders the README's images from the examples and the
   gallery.
 
+### Fixed
+- `flow-block` no longer leaves its rounded top edge alone at the bottom of a
+  page when the callout starts there. The top edge, the padding and the title
+  now stay with the first line of text.
+
 ### Changed
 - The fulfillment scale now runs crimson → copper → amber → green → teal.
   Every sample keeps 3:1 contrast on paper, and the ends part for

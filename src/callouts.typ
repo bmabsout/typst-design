@@ -97,12 +97,17 @@
     inset: (x: inset, y: 0pt),
     spacing: 0pt,
     {
-      place(dx: -inset, dy: -radius, box(width: 100% + 2 * inset, cap(true)))
-      v(pad)
-      if title != none {
-        block(sticky: true, spacing: 0pt, title)
-        v(title-gap)
-      }
+      // The top cap, the padding and the title stick to the first line, so a
+      // page never ends on a cap with nothing under it. A fragment left
+      // empty by that move draws neither fill nor stroke.
+      block(sticky: true, spacing: 0pt, width: 100%, {
+        place(dx: -inset, dy: -radius, box(width: 100% + 2 * inset, cap(true)))
+        v(pad)
+        if title != none {
+          title
+          v(title-gap)
+        }
+      })
       content
       v(pad)
       place(dx: -inset, box(width: 100% + 2 * inset, cap(false)))
