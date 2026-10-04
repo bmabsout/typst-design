@@ -129,7 +129,16 @@ Each kind owns a ramp: notes maroon, theorems rose, algorithms blue, notices ora
 
 ![A callout across pages](docs/images/page-spanning-callout.png)
 
-Typst rounds and closes every fragment of a breakable block. `flow-block` carries only the side strokes and the fill, and places the two rounded caps in the flow: one above the first fragment, one after the last line. Use `callouts(..)` to configure the family, for example `callouts(title-size: 14pt, theorem-ramp: ramps.teal)`. `classic: true` reproduces an earlier engine and tones exactly.
+Typst rounds and closes every fragment of a breakable block. `flow-block` carries only the side strokes and the fill, and places the two rounded caps in the flow: one above the first fragment, one after the last line.
+
+`frame` is the other engine. The block records where it starts and ends, and `frame-rules` draws each page's piece on the page background as one shape, so a dashed outline runs on around the corners without a seam. It needs `#show: frame-rules` (pass your own page background as `background:`), and on a continued page it spans the text area from margin to margin.
+
+```typst
+#show: frame-rules
+#let (note, theorem) = callouts(engine: frame)
+```
+
+Use `callouts(..)` to configure the family, for example `callouts(title-size: 14pt, theorem-ramp: ramps.teal)`. `classic: true` reproduces an earlier engine and tones exactly.
 
 ## Templates
 
@@ -181,14 +190,14 @@ A fulfillment is a value in [0, 1] saying how well a requirement is met. Low is 
 
 ## API overview
 
-Everything is exported flat, and also by module: `colors`, `typography`, `marks`, `callout`, `rlmath`, `icons`, `fpl`, `figures` and `templates`. Names that would shadow Typst's own (`state`, `document`) are only reachable through their module.
+Everything is exported flat, and also by module: `colors`, `typography`, `marks`, `callout`, `frames`, `rlmath`, `icons`, `fpl`, `figures` and `templates`. Names that would shadow Typst's own (`state`, `document`) are only reachable through their module.
 
 | Module | Exports |
 | --- | --- |
 | color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
-| callouts | `callouts`, `callout-rules`, `flow-block`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |
+| callouts | `callouts`, `callout-rules`, `flow-block`, `frame`, `frame-rules`, `frame-layer`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |
 | math | `rlmath.state` / `action` / `reward`, `rl`, `pmean`, `fbox`, `loss`, `expect`, `policy`, `make-abbrv`, `abbreviations`, `abbreviation-table` |
 | fulfillment | `fulfillment-color`, `pie`, `price`, `trace`, `percent`, `state-of` |
 | figures | `figures.bell(cetz, ..)`, `figures.segment(cetz, ..)` |

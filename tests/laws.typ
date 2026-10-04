@@ -2,6 +2,7 @@
 // `assert` must hold. Run: typst compile --root . tests/laws.typ /tmp/laws.pdf
 #import "../lib.typ": *
 #show: callout-rules
+#show: frame-rules
 
 #let hex(c) = c.to-hex()
 #let at(g, t) = hex(g.sample(t))
@@ -128,5 +129,8 @@
 #theorem(title: [Law])[A theorem.]
 #algorithm(title: [Steps])[An algorithm.]
 #notice[A notice.]
+#let (note: framed) = callouts(engine: frame)
+#framed(title: [Framed])[A note drawn on the page.] <framed>
+#frame[A bare frame.] See @framed.
 #pie(0.42) #price(none) #trace((0.2, 0.4, none, 0.6, 0.8), back: 2, ahead: 2)
 #sep[a][b][c] #capsule-rule()

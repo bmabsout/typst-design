@@ -10,6 +10,10 @@ All notable changes to this package are recorded here. The format follows
 - `flow-block`: a rounded callout block that breaks across pages, rounded only
   where it really starts and ends. It is the default callout engine.
 - `callout-rules`: the document rule that lets callout figures break.
+- `frame`, `frame-rules` and `frame-layer`: a second page-spanning engine.
+  The block records where it starts and ends, and the page background draws
+  each page's piece as one shape, so a dashed outline has no seams at the
+  corners. Opt in with `callouts(engine: frame)` and `#show: frame-rules`.
 - `ramp-from(color)`: a whole identity ramp grown from one color, whose
   strong sample is that color. `cv-style(ramp:)` accepts a color too.
 - Sampling rules: ink tones on a 15% grid (`stops.ink`, `strong`, `medium`,

@@ -11,6 +11,7 @@
 #import "src/type.typ" as typography
 #import "src/marks.typ" as marks
 #import "src/callouts.typ" as callout
+#import "src/frames.typ" as frames
 #import "src/math.typ" as rlmath
 #import "src/icons.typ" as icons
 #import "src/fpl.typ" as fpl
@@ -37,6 +38,7 @@
 #import "src/marks.typ": capsule, capsule-rule, diamond, sep
 // Callouts.
 #import "src/callouts.typ": seamless-block, flow-block, callouts, callout-rules, note, theorem, algorithm, notice
+#import "src/frames.typ": frame, frame-layer, frame-rules
 // Math.
 #import "src/math.typ": observed, acted, valued, rl, pmean, fbox, vecand, vecor, loss, expect, policy, sigmoid, stack-math, make-abbrv, abbreviations, abbreviation-table
 // Icons.
