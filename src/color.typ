@@ -104,8 +104,10 @@
 ///   same ramp, 30% strong (the identity, heading 1, a callout's title), 45%
 ///   medium (heading 2, a supplement, a notice, the role colors,
 ///   references), 60% soft (heading 3, chart marks).
-/// - RUNNING TEXT sits at medium or deeper, so it keeps 4.5:1 contrast on
-///   paper in every ramp. Soft is for large text and marks only.
+/// - TEXT READS: a job set as text names its size (`text-needs`), and its
+///   sample moves deeper only as far as APCA and WCAG 2 require
+///   (`readable`). Links, references, labels and role symbols are small
+///   text, and end at about 30% to 40%.
 /// - QUIET TONES sit near white, at 80% (a mark's line), 90% (rules,
 ///   outlines) and 97% (fills), drawn with `quiet`.
 ///
@@ -164,6 +166,80 @@
   oklch(l, calc.min(c, quietness * (1 - l / 100%)), h)
 }
 
+// ------------------------------------------------------------- legibility --
+
+/// APCA lightness contrast (APCA-W3 0.0.98G) of text `fg` on `bg`, as Lc:
+/// positive for dark text on a light ground, negative for the reverse.
+#let apca(fg, bg) = {
+  let y(c) = {
+    let (r, g, b) = rgb(c).components(alpha: false).map(v => calc.pow(v / 100%, 2.4))
+    let y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b
+    if y < 0.022 { y + calc.pow(0.022 - y, 1.414) } else { y }
+  }
+  let (t, b) = (y(fg), y(bg))
+  if calc.abs(b - t) < 0.0005 { return 0 }
+  if b > t {
+    let s = (calc.pow(b, 0.56) - calc.pow(t, 0.57)) * 1.14
+    if s < 0.1 { 0 } else { (s - 0.027) * 100 }
+  } else {
+    let s = (calc.pow(b, 0.65) - calc.pow(t, 0.62)) * 1.14
+    if s > -0.1 { 0 } else { (s + 0.027) * 100 }
+  }
+}
+
+/// The WCAG 2 contrast ratio of two colors.
+#let contrast(a, b) = {
+  let lum(c) = {
+    let (r, g, b) = rgb(c).components(alpha: false).map(v => v / 100%)
+    let lin(v) = if v <= 0.04045 { v / 12.92 } else { calc.pow((v + 0.055) / 1.055, 2.4) }
+    0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+  }
+  let (x, y) = (lum(a), lum(b))
+  (calc.max(x, y) + 0.05) / (calc.min(x, y) + 0.05)
+}
+
+/// What text must reach, by size: APCA's Bronze levels (Lc) and the WCAG 2
+/// ratio. Sizes are CSS px, 1pt = 4/3 px.
+///
+/// - `small`: running text below 18px, small capitals, links, symbols in a
+///   line. Lc 90 and 7:1 (WCAG AAA).
+/// - `body`: bold labels at body size, regular text from 18px. Lc 75, 7:1.
+/// - `subhead`: bold from 16px, regular from 24px. Lc 60, 4.5:1.
+/// - `headline`: bold from 24px, regular from 32px. Lc 45, 3:1.
+#let text-needs = (
+  small: (lc: 90, ratio: 7),
+  body: (lc: 75, ratio: 7),
+  subhead: (lc: 60, ratio: 4.5),
+  headline: (lc: 45, ratio: 3),
+)
+
+/// Whether `c` reads at `need` on `on`, by both measures.
+#let reads(c, need, on: white) = calc.abs(apca(c, on)) >= need.lc and contrast(c, on) >= need.ratio
+
+/// How much chroma body-size text may carry, per unit of lightness. A deep
+/// sample of a saturated ramp glows at text size and reads lighter than it
+/// measures (the Helmholtz-Kohlrausch effect, which neither contrast measure
+/// models). Capped, it reads as ink.
+#let legibility = 0.4
+
+/// A color made fit for body-size text: its lightness and hue kept, its
+/// chroma capped at `legibility × lightness`.
+#let as-text(c) = {
+  let (l, ch, h, ..) = oklch(c).components()
+  oklch(l, calc.min(ch, legibility * l / 100%), h)
+}
+
+/// The color text of size `need` takes from ramp `g` at `t`: that sample,
+/// moved along the ramp away from the ground only as far as it must to read
+/// on `on`. Small and body text is also made fit for text (`as-text`).
+#let readable(g, t, need: text-needs.small, on: white) = {
+  let fit(c) = if need.lc >= text-needs.body.lc { as-text(c) } else { c }
+  let step = if apca(black, on) > 0 { -1% } else { 1% }
+  let u = t
+  while not reads(fit(g.sample(u)), need, on: on) and u > 0% and u < 100% { u += step }
+  fit(g.sample(u))
+}
+
 /// A quiet tone on a dark ground: as far above the dark paper as `quiet`
 /// sits below white, with chroma capped the same way.
 #let quiet-dark(g, t, ground: paper-dark) = {
@@ -178,10 +254,10 @@
 #let tones(g) = (
   wash: quiet(g, stops.fill),
   line: quiet(g, stops.rule),
-  title: g.sample(jobs.title),
-  supplement: g.sample(jobs.supplement),
+  title: readable(g, jobs.title, need: text-needs.subhead, on: quiet(g, stops.fill)),
+  supplement: readable(g, jobs.supplement),
   ink: g.sample(stops.ink),
-  notice: g.sample(jobs.notice),
+  notice: readable(g, jobs.notice, need: text-needs.body, on: quiet(g, stops.fill)),
 )
 
 /// The callout tones the dissertation was set in, before the rules above:
@@ -201,9 +277,9 @@
 /// (actions, outputs) and what is valued (rewards, objectives). The same
 /// color marks a role in prose, in equations and in plots.
 #let roles = (
-  observed: ramps.blue.sample(jobs.role),
-  acted: ramps.rose.sample(jobs.role),
-  valued: ramps.teal.sample(jobs.role),
+  observed: readable(ramps.blue, jobs.role),
+  acted: readable(ramps.rose, jobs.role),
+  valued: readable(ramps.teal, jobs.role),
 )
 
 // ---------------------------------------------------------------- palette --
@@ -218,6 +294,7 @@
 #let palette = (
   primary: ramps.maroon.sample(stops.strong),
   secondary: ramps.maroon.sample(stops.medium),
+  link: readable(ramps.maroon, stops.strong),
   ink: oklch(28.91%, 0, 0deg),
   ink-muted: oklch(45.68%, 0, 0deg),
   paper: white,

@@ -38,6 +38,13 @@ All notable changes to this package are recorded here. The format follows
   contents title and entries take the heading colors, the abstract has its
   heading and a box around its author block (`make-template(framed:)`), as
   the dissertation was first set. `compliance: "bu"` keeps them plain.
+- Text reads by the measures designers use. `apca` (APCA-W3 0.0.98G) and
+  `contrast` (WCAG 2) measure it, `text-needs` holds the targets by size,
+  and `readable(ramp, t, need:)` moves a sample deeper only as far as it
+  must to pass both. Links, references, contents entries, subsections,
+  role symbols, notices and callout titles take their colors through it.
+  Small and body text also has its chroma capped (`as-text`), since a
+  saturated sample looks lighter than it measures. `palette.link` is new.
 
 ### Fixed
 - `flow-block` no longer leaves its rounded top edge alone at the bottom of a

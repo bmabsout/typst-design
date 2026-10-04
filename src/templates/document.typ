@@ -2,7 +2,7 @@
 // voice: a serif body, sans capitals over a capsule rule for sections, one
 // accent for titles, links and ornaments.
 
-#import "../color.typ": palette
+#import "../color.typ": palette, as-text
 #import "../type.typ": faces
 #import "../marks.typ": capsule-rule
 
@@ -65,7 +65,7 @@
   show strong: set text(fill: ink)
   // A link out is underlined in the accent. A link within the document reads
   // as the text it is.
-  show link: it => if type(it.dest) == str { text(fill: primary, underline(it)) } else { it }
+  show link: it => if type(it.dest) == str { text(fill: as-text(primary), underline(it)) } else { it }
   show heading.where(level: 1): it => block(above: 1.5em, below: 1.2em, sticky: true, {
     text(font: fonts.body, size: 2em, weight: "regular", fill: primary, it.body)
     v(0.2em)

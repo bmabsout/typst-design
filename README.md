@@ -12,7 +12,7 @@ A design system for documents, built from a few hand-picked rules and written in
 ```
 
 - **Color from gradients, not swatches.** Every color is a ramp and a position (`ramps.maroon.sample(30%)`). Change a ramp's two endpoints and every heading, rule, callout and plot follows.
-- **One color in, a whole palette out.** `ramp-from(color)` grows a ramp from a single color, and three rules place every sample on it. Ink tones sit on a 15% grid. Running text stays at medium or deeper, so it keeps 4.5:1 contrast. Quiet tones carry chroma in proportion to their distance from white, so washes are equally quiet in every hue.
+- **One color in, a whole palette out.** `ramp-from(color)` grows a ramp from a single color, and three rules place every sample on it. Ink tones sit on a 15% grid. Text is checked against the measures designers use, APCA and WCAG 2, and moves deeper along its ramp only as far as it must to pass. Quiet tones carry chroma in proportion to their distance from white, so washes are equally quiet in every hue.
 - **Callouts that break like prose.** A long note is rounded only where it really starts and ends. Where a page cuts it, it is simply open.
 - **Templates as data.** Each template takes its whole look as one dictionary. Recolor a CV from one argument, or switch a thesis to a university's black-heading compliance mode.
 - **Relative units.** Sizes are steps of one ×1.2 type scale and `em`. Nothing is in pixels.
@@ -90,17 +90,20 @@ Three rules decide where each job samples a ramp:
 | Rule | Positions (`stops`) | Jobs (`jobs`) |
 | --- | --- | --- |
 | **Ink tones** sit on a 15% grid | `ink` 15%, `strong` 30%, `medium` 45%, `soft` 60% | Heading 1 and callout titles are strong. Heading 2, supplements, notices, roles and references are medium. Heading 3 and chart marks are soft. |
-| **Running text** sits at medium or deeper | 15–45% | keeps 4.5:1 contrast on paper in every ramp. Soft is for large text and marks only. |
+| **Text reads**: a job names its size, and `readable` moves its sample deeper until it passes | from the job's stop, deeper as needed | small text (links, references, symbols) Lc 90 and 7:1, bold labels Lc 75 and 7:1, subheads Lc 60 and 4.5:1, headlines Lc 45 and 3:1 |
 | **Quiet tones** keep a sample's lightness and hue, with chroma ≤ `quietness × (1 − L)` | `line` 80%, `rule` 90%, `fill` 97% | diamond outlines (80%), capsule rules and callout outlines (90%), panels and callout washes (97%) |
 
 ```typst
 #ramps.rose.sample(stops.strong)     // a theorem's title
 #quiet(ramps.rose, stops.fill)       // its wash
 #tones(ramps.rose)                   // wash, line, title, supplement, ink, notice
-#text(fill: roles.valued)[reward]    // teal at the medium stop
+#text(fill: roles.valued)[reward]    // teal, deepened until it reads as small text
+#readable(ramps.maroon, stops.medium, need: text-needs.body)  // any job, at any size
 ```
 
-`palette` names the identity's colors (`primary`, `secondary`, `ink`, `ink-muted`, `mark-fill`, `rule`, `mark-line`). `chart` gives six categorical colors that alternate soft and medium, so neighbors differ in lightness as well as hue. On the dark ground `paper-dark`, `dark-stop(t)` moves a text tone so it keeps the contrast it has on white, and `quiet-dark(ramp, t)` is the matching quiet tone. Text tones keep 4.5:1 there too.
+`text-needs` holds the targets: APCA's Bronze levels in Lc, and the WCAG 2 ratio, by size (1pt = 4/3 CSS px). `apca(fg, bg)` and `contrast(a, b)` are the two measures, and `reads(color, need)` checks both. Small and body text also has its chroma capped at `legibility × lightness` (`as-text`): a deep, saturated sample glows at text size and looks lighter than it measures, which neither measure models.
+
+`palette` names the identity's colors (`primary`, `secondary`, `link`, `ink`, `ink-muted`, `mark-fill`, `rule`, `mark-line`). `chart` gives six categorical colors that alternate soft and medium, so neighbors differ in lightness as well as hue. On the dark ground `paper-dark`, `dark-stop(t)` moves a text tone so it keeps the contrast it has on white, and `quiet-dark(ramp, t)` is the matching quiet tone. Text tones keep 4.5:1 there too.
 
 ![Gallery: ramps and palette](docs/images/gallery.png)
 
@@ -194,7 +197,7 @@ Everything is exported flat, and also by module: `colors`, `typography`, `marks`
 
 | Module | Exports |
 | --- | --- |
-| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
+| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `readable`, `text-needs`, `reads`, `apca`, `contrast`, `as-text`, `legibility`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
 | callouts | `callouts`, `callout-rules`, `flow-block`, `frame`, `frame-rules`, `frame-layer`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |
@@ -218,7 +221,7 @@ $ nix build .#gallery         # gallery/gallery.pdf
 $ python3 scripts/images.py   # the README's images in docs/images
 ```
 
-Compiling `tests/laws.typ` runs every `assert` in it. It checks that the ramps are their documented gradients stop for stop, that every sample obeys the three rules, that text keeps its contrast on white and on the dark ground, that quiet tones stay quiet in every ramp, and that the fulfillment scale stays readable. Changes to the rules belong there first.
+Compiling `tests/laws.typ` runs every `assert` in it. It checks that the ramps are their documented gradients stop for stop, that every sample obeys the three rules, that every ramp's text passes APCA and WCAG 2 at every size on paper and on its wash, that text keeps its contrast on the dark ground, that quiet tones stay quiet in every ramp, and that the fulfillment scale stays readable. Changes to the rules belong there first.
 
 ## License
 
