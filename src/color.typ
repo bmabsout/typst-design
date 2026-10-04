@@ -135,6 +135,17 @@
 /// The same job on a dark ground: the sample mirrored across the ramp.
 #let mirror(t) = 100% - t
 
+/// The dark theme's paper.
+#let paper-dark = rgb("#1b1718")
+
+/// Where a light-theme stop samples on a dark ground: the ink grid mirrored
+/// into the space between the dark paper and white, so text keeps the same
+/// contrast steps it has on white paper.
+#let dark-stop(t, ground: paper-dark) = {
+  let lp = oklch(ground).components().at(0) / 100%
+  (1 - (t / 100%) * (1 - lp)) * 100%
+}
+
 /// A sample with its chroma scaled by `chroma` (1 = as sampled).
 #let shade(g, t, chroma: 100%) = {
   let (l, c, h, ..) = oklch(g.sample(t)).components()
@@ -151,6 +162,15 @@
 #let quiet(g, t) = {
   let (l, c, h, ..) = oklch(g.sample(t)).components()
   oklch(l, calc.min(c, quietness * (1 - l / 100%)), h)
+}
+
+/// A quiet tone on a dark ground: as far above the dark paper as `quiet`
+/// sits below white, with chroma capped the same way.
+#let quiet-dark(g, t, ground: paper-dark) = {
+  let lp = oklch(ground).components().at(0) / 100%
+  let d = (1 - t / 100%) * 1.6
+  let (l, c, h, ..) = oklch(g.sample(t)).components()
+  oklch((lp + d) * 100%, calc.min(c, quietness * d), h)
 }
 
 /// The tones a callout draws from its ramp: a quiet fill and outline, a
@@ -238,7 +258,7 @@
 
 /// A strip of a gradient's samples, to look at a ramp as it really samples
 /// (a gradient fill is redrawn by the viewer and can differ out of gamut).
-/// Neighbouring cells overlap a hair so no seam shows between them.
+/// Neighboring cells overlap a hair so no seam shows between them.
 #let swatch(fill, width: 10em, height: 2em, samples: 100) = {
   let at(i) = if type(fill) == gradient { fill.sample(i * 100% / calc.max(1, samples - 1)) } else { fill }
   layout(size => {

@@ -54,6 +54,16 @@
   }
 }
 #for (role, c) in roles { assert(contrast(c, white) >= 4.5, message: role) }
+
+// On the dark ground, the same text tones keep 4.5:1 (orange's medium, used
+// only for the bold notice label, keeps 4.3:1).
+#for (name, g) in ramps {
+  if name in ("black", "amber") { continue }
+  for t in (stops.ink, stops.strong, stops.medium) {
+    let need = if name == "orange" and t == stops.medium { 4.3 } else { 4.5 }
+    assert(contrast(g.sample(dark-stop(t)), paper-dark) >= need, message: name + " on dark at " + repr(t))
+  }
+}
 #for t in range(0, 101, step: 5) { assert(contrast(fulfillment.sample(t * 1%), white) >= 3, message: "fulfillment at " + str(t)) }
 
 // 3. Quiet tones keep their sample's lightness and hue, and carry at most
