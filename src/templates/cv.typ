@@ -6,7 +6,7 @@
 // `cv-style(..)` builds that dictionary from the identity's defaults, so a
 // document overrides only what differs.
 
-#import "../color.typ": palette, ramps, ramp-from, quiet, stops
+#import "../color.typ": palette, ramps, ramp-from, quiet, stops, readable, text-needs
 #import "../type.typ": faces
 #import "../marks.typ": capsule-rule, diamond as _diamond
 #import "../icons.typ": fa
@@ -17,6 +17,7 @@
   ramp: ramps.maroon,
   primary: auto,
   secondary: auto,
+  link: auto,
   shade: auto,
   shade-line: auto,
   rule: auto,
@@ -32,16 +33,21 @@
   let ramp = if type(ramp) == color { ramp-from(ramp) } else { ramp }
   let pick(v, d) = if v == auto { d } else { v }
   let primary = pick(primary, ramp.sample(stops.strong))
-  let secondary = pick(secondary, ramp.sample(stops.medium))
+  // Subsections, links and the contact lines are set at body size, so they
+  // take their samples through `readable`.
+  let secondary = pick(secondary, readable(ramp, stops.medium))
+  let link = pick(link, readable(ramp, stops.strong))
   let shade-fill = pick(shade, quiet(ramp, stops.fill))
   let shade-line = pick(shade-line, quiet(ramp, stops.line))
   let rule = pick(rule, quiet(ramp, stops.rule))
+  let contact = readable(ramp, stops.strong, on: shade-fill)
   (
   colors: (
     primary: primary,
     secondary: secondary,
+    link: link,
     shade: shade-fill,
-    shade-fg: primary,
+    shade-fg: contact,
     shade-line: shade-line,
     rule: rule,
   ),
@@ -364,7 +370,7 @@
 }
 
 /// The CV page: US letter, the page number in the primary at the foot,
-/// links underlined in the primary.
+/// links underlined in the link color.
 #let cv-page(body, style: cv-style(), title: none) = {
   set document(title: title) if title != none
   set page(
@@ -378,6 +384,6 @@
   set text(font: style.fonts.body)
   set par(leading: 1em)
   set block(spacing: 0em)
-  show link: it => text(fill: style.colors.primary, underline(it))
+  show link: it => text(fill: style.colors.link, underline(it))
   body
 }

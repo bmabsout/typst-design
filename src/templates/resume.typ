@@ -1,7 +1,7 @@
 // RESUME: the one-page, two-column resume: a name beside a contact panel,
 // small-caps section titles over a hairline, dense entries.
 
-#import "../color.typ": palette
+#import "../color.typ": palette, as-text
 #import "../type.typ": faces
 #import "../marks.typ": diamond as _diamond
 #import "../icons.typ": fa
@@ -17,7 +17,7 @@
   size: 10pt,
   owner: none,
 ) = (
-  colors: (primary: primary, shade: shade, shade-fg: primary, shade-line: shade-line, ink: ink),
+  colors: (primary: primary, link: as-text(primary), shade: shade, shade-fg: as-text(primary), shade-line: shade-line, ink: ink),
   fonts: (body: body, sans: sans, icons: icons),
   size: size,
   owner: owner,

@@ -31,7 +31,7 @@
 )
 
 // Color.
-#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, tones, classic-tones, roles, palette, fulfillment, chart, swatch
+#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, apca, contrast, text-needs, reads, legibility, as-text, readable, tones, classic-tones, roles, palette, fulfillment, chart, swatch
 // Type.
 #import "src/type.typ": faces, ratio, scale, font-options, label-text, minor
 // Marks.

@@ -6,7 +6,7 @@
 // `thesis-style(..)` is the whole look as data, and `make-template(style)`
 // returns the page builders and `assemble`, the show rule.
 
-#import "../color.typ": ramps, ref-ramp, stops, jobs, quiet
+#import "../color.typ": ramps, ref-ramp, stops, jobs, quiet, readable, text-needs
 #import "../type.typ": font-options
 #import "../marks.typ": capsule-rule
 #import "../callouts.typ": callouts
@@ -39,11 +39,15 @@
   heading: (
     text: heading,
     levels: (
-      (text: (size: 1.8em, weight: "bold", fill: colors.primary.sample(jobs.heading-1)), spacing: (above: 2em, below: 2em)),
-      (text: (size: 1.5em, weight: "bold", fill: colors.primary.sample(jobs.heading-2)), spacing: (above: 2em, below: 1.5em)),
-      (text: (size: 1.2em, weight: "bold", fill: colors.primary.sample(jobs.heading-3)), spacing: (above: 2em, below: 1.5em)),
+      (text: (size: 1.8em, weight: "bold", fill: readable(colors.primary, jobs.heading-1, need: text-needs.headline)), spacing: (above: 2em, below: 2em)),
+      (text: (size: 1.5em, weight: "bold", fill: readable(colors.primary, jobs.heading-2, need: text-needs.subhead)), spacing: (above: 2em, below: 1.5em)),
+      (text: (size: 1.2em, weight: "bold", fill: readable(colors.primary, jobs.heading-3, need: text-needs.subhead)), spacing: (above: 2em, below: 1.5em)),
       (text: (size: 1em, weight: "bold", fill: black)),
     ),
+    // A heading's color where it is named at body size: in the contents
+    // (bold) and in a reference (small capitals).
+    entries: (jobs.heading-1, jobs.heading-2, jobs.heading-3, 0%).map(t => readable(colors.primary, t, need: text-needs.body)),
+    refs: (jobs.heading-1, jobs.heading-2, jobs.heading-3, 0%).map(t => readable(colors.primary, t)),
   ),
   radius: 12pt,
 )
@@ -162,7 +166,7 @@
     show ref: it => {
       show text: it => smallcaps(lower(it))
       if it.element != none and it.element.func() == heading {
-        set text(fill: heading-style(style, level: it.element.level - 1).fill)
+        set text(fill: style.heading.refs.at(it.element.level - 1))
         it
       } else {
         set text(fill: style.colors.ref.sample(jobs.ref))
@@ -185,7 +189,7 @@
     // after the front matter under `compliance: "bu"`.
     let entry-colors(body) = {
       show outline.entry: it => {
-        set text(..heading-style(style, level: it.level - 1), size: 1em)
+        set text(..heading-style(style, level: it.level - 1), size: 1em, fill: style.heading.entries.at(it.level - 1))
         box(it)
       }
       body

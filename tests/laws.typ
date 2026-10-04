@@ -33,28 +33,35 @@
 #assert.eq(hex(palette.primary), "#6a001a")
 #assert.eq(hex(palette.secondary), "#922840")
 #assert.eq(at(ramps.maroon, stops.soft), "#b7636c")
-#assert.eq(roles.observed, ramps.blue.sample(stops.medium))
-#assert.eq(roles.acted, ramps.rose.sample(stops.medium))
-#assert.eq(roles.valued, ramps.teal.sample(stops.medium))
+#for (role, c) in roles { assert(reads(c, text-needs.small), message: role + " reads as small text") }
 
-// Running text keeps 4.5:1 on paper: every ramp at medium and deeper, and
-// every role color.
-#let luminance(c) = {
-  let (r, g, b, ..) = rgb(c).components(alpha: false).map(x => x / 100%)
-  let lin(v) = if v <= 0.04045 { v / 12.92 } else { calc.pow((v + 0.055) / 1.055, 2.4) }
-  0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+// The measures are the published ones: APCA's reference values, and WCAG 2's.
+#assert.eq(calc.round(apca(black, white), digits: 2), 106.04)
+#assert.eq(calc.round(apca(rgb("#888888"), white), digits: 2), 63.06)
+#assert.eq(calc.round(contrast(rgb("#777777"), white), digits: 2), 4.48)
+
+// Text reads: every ramp, every job's sample, every size of text, on paper
+// and on its own wash, passes APCA and WCAG 2 once taken through `readable`.
+#for (name, g) in ramps {
+  for t in (stops.ink, stops.strong, stops.medium, stops.soft) {
+    for (size, need) in text-needs {
+      // Amber ends at 70% lightness and black is black throughout, so
+      // neither has a wash to set text on.
+      for ground in if name in ("amber", "black") { (white,) } else { (white, quiet(g, stops.fill)) } {
+        assert(reads(readable(g, t, need: need, on: ground), need, on: ground), message: name + " " + size + " at " + repr(t))
+      }
+    }
+  }
 }
-#let contrast(a, b) = {
-  let (x, y) = (luminance(a), luminance(b))
-  (calc.max(x, y) + 0.05) / (calc.min(x, y) + 0.05)
-}
+// A sample that already reads is left where it is.
+#assert.eq(readable(ramps.maroon, stops.strong, need: text-needs.headline), ramps.maroon.sample(stops.strong))
+#assert.eq(palette.link, readable(ramps.maroon, stops.strong))
 #for (name, g) in ramps {
   if name == "black" { continue }
   for t in (stops.ink, stops.strong, stops.medium) {
     assert(contrast(g.sample(t), white) >= 4.5, message: name + " at " + repr(t) + " is too light for text")
   }
 }
-#for (role, c) in roles { assert(contrast(c, white) >= 4.5, message: role) }
 
 // On the dark ground, the same text tones keep 4.5:1 (orange's medium, used
 // only for the bold notice label, keeps 4.3:1).
@@ -66,6 +73,18 @@
   }
 }
 #for t in range(0, 101, step: 5) { assert(contrast(fulfillment.sample(t * 1%), white) >= 3, message: "fulfillment at " + str(t)) }
+
+// Body-size text carries at most `legibility × lightness` of chroma, keeps
+// its sample's lightness and hue, and leaves tones already under the cap
+// alone (the roles, every medium sample).
+#for (name, g) in ramps {
+  for t in (stops.ink, stops.strong, stops.medium) {
+    let (l, c, h, ..) = oklch(as-text(g.sample(t))).components()
+    let (l0, c0, h0, ..) = oklch(g.sample(t)).components()
+    assert.eq(l, l0, message: name)
+    assert(c <= legibility * l / 100% + 0.00001, message: name + " glows at " + repr(t))
+  }
+}
 
 // 3. Quiet tones keep their sample's lightness and hue, and carry at most
 //    `quietness × (1 − lightness)` of chroma, whatever the ramp.
