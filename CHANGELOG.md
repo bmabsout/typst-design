@@ -55,6 +55,8 @@ All notable changes to this package are recorded here. The format follows
   saturated sample looks lighter than it measures. `palette.link` is new.
 
 ### Fixed
+- The working document marks its lists with the diamond from `marks.typ`
+  instead of the "◇" glyph, which drew a tall, narrow outline (#12).
 - `dated` no longer fails on every call. Its parameters were named `left` and
   `right`, which hid the alignments it sets (#7). It now takes `(body, date)`.
 - CV sections no longer leave a page nearly empty. A list of entries was a

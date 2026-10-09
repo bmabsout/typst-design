@@ -4,7 +4,7 @@
 
 #import "../color.typ": palette, as-text
 #import "../type.typ": faces
-#import "../marks.typ": capsule-rule
+#import "../marks.typ": capsule-rule, diamond
 
 #let doc-fonts = (
   body: ("EB Garamond", "EB Garamond 12", "Libertinus Serif"),
@@ -58,7 +58,7 @@
     number-align: center,
     footer: context align(center, text(fill: primary, size: 12pt, counter(page).display("1"))),
   )
-  set list(marker: text(fill: palette.mark-line.darken(20%))[◇], spacing: 0.55em)
+  set list(marker: diamond(spacing: 0em), spacing: 0.55em)
   set enum(numbering: n => text(fill: primary, numbering("1.", n)))
   show emph: set text(fill: palette.secondary)
   show raw: set text(font: fonts.mono, size: 0.9em)
