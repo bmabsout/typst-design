@@ -100,13 +100,7 @@
 #assert.eq(tones(ramps.rose).line, quiet(ramps.rose, stops.rule))
 #assert.eq(palette.rule, quiet(ramps.maroon, stops.rule))
 
-// 4. The classic tones are the dissertation's, value for value.
-#let ct = classic-tones(ramps.maroon)
-#assert.eq(hex(ct.wash), "#fff8f8")
-#assert.eq(hex(ct.line), "#fce0e1")
-#assert.eq(hex(ct.title), at(ramps.maroon, 35%))
-
-// Chart slots alternate soft and medium.
+// 4. Chart slots alternate soft and medium.
 #assert.eq(chart.len(), 6)
 
 // 5. The fulfillment scale runs bad (dark crimson) to good (teal).
@@ -121,12 +115,6 @@
 #assert.eq(state-of(0.4), "Problem")
 #assert.eq(state-of(0.6), "Watch")
 #assert.eq(state-of(0.9), "Fine")
-
-// 6. Compliance mode only blackens: the headings sample a black ramp.
-#let bu = thesis-style(colors: thesis-colors(compliance: "bu"))
-#for l in bu.heading.levels { assert.eq(hex(l.text.fill), "#000000") }
-#let identity = thesis-style()
-#assert.eq(hex(identity.heading.levels.at(0).text.fill), "#6a001a")
 
 // 7b. One color grows the whole identity: `ramp-from` gives back maroon and
 //     sienna from their strong samples, and any color sits at 30%.

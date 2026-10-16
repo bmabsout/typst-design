@@ -123,32 +123,7 @@ Reinforcement Learning#diamond()Embedded Systems#diamond()Type Theory#diamond()C
 #algorithm(title: [Balanced Policy Gradient])[An algorithm takes the blue ramp.]
 #notice[a warning has no title and opens in the orange ramp's 50% sample.]
 
-= Templates
-== CV
-#let k = cv-kit(cv-style(owner: "Author A."))
-#block(width: 100%, {
-  set text(font: faces.garamond)
-  (k.section)("Education", (
-    (k.entry)((k.entry-heading)(l: [Ph.D. in Computer Science], m: [A University], r: [2019 -- 2024]), [Dissertation: _A Title in Italic_ #(k.links)((k.labeled)("dissertation", link("https://example.com")[example.com/thesis]), (k.labeled)("code", link("https://example.com")[example.com/code]))]),
-    (k.entry)((k.entry-heading)(l: [B.S. in Mathematics], m: [Another University], r: [2015 -- 2019]), []),
-  ))
-  v(1em)
-  (k.contact-box)((
-    (icon: "email", text: [name\@example.com]), (icon: "location", text: [City, Country]),
-    (icon: "globe", text: [example.com]), (icon: "github", text: [github.com/you]),
-    (icon: "phone", text: [+1 555 0100]), (icon: "scholar", text: [Google Scholar]),
-  ))
-})
-#caption[`cv-style(ramp: ramps.maroon)`. Pass another ramp and the whole CV recolors.]
-
-== Recolored from one argument
-#block(width: 100%, {
-  set text(font: faces.garamond)
-  let k = cv-kit(cv-style(ramp: ramps.blue, owner: "Author A."))
-  (k.section)("Publications", ((k.publication-entry)((authors: "Author A.* and Author B.* and Author C.", title: [A Paper Title Set in Italic], venue: "Venue", year: 2024, doi: [10.0000/example], citations: 12, extra_links: ()), [[1]]),))
-})
-
-== FPL marks
+= Fulfillment
 #for v in (0.08, 0.35, 0.62, 0.9) [#price(v) #h(1.2em)]
 #price(none)
 #v(0.5em)

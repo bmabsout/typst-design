@@ -19,7 +19,6 @@ EDGE, GUTTER = 8, 16
 # (image, source, pixels per inch, pages placed side by side)
 IMAGES = [
     ("quickstart", "examples/quickstart.typ", 144, [1]),
-    ("cv", "examples/cv.typ", 110, [1]),
     ("page-spanning-callout", "examples/page-spanning-callout.typ", 90, [1, 2]),
     ("gallery", "gallery/gallery.typ", 72, [1, 2]),
 ]

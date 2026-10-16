@@ -57,6 +57,13 @@ All notable changes to this package are recorded here. The format follows
   Small and body text also has its chroma capped (`as-text`), since a
   saturated sample looks lighter than it measures. `palette.link` is new.
 
+### Removed
+- The CV, résumé, statement and thesis templates, the thesis's figure
+  primitives (`bell`, `segment`) and its classic callouts (`seamless-block`,
+  `classic-tones`, `callouts(classic:)`). They belong to particular
+  documents, so each now lives in the repository of the document it sets,
+  built on these tools. The working-document template stays.
+
 ### Fixed
 - The working document marks its lists with the diamond from `marks.typ`
   instead of the "◇" glyph, which drew a tall, narrow outline (#12).
