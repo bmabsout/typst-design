@@ -173,3 +173,10 @@
   assert.eq(ends("law-b"), 2, message: "a page break between spans gives each a close")
   assert.eq(query(span-start).filter(m => m.value == "law-a").len(), 3)
 }
+
+// 10. A callout's engine and tones are hooks: a document can draw its callouts
+//     with its own block and its own colors.
+#let mine(g) = (wash: white, line: black, title: black, supplement: black, ink: black, notice: black)
+#let boxed(title: none, body, ..style) = block(..style, [#title \ #body])
+#let (note: plain) = callouts(engine: boxed, tones: mine, figure: false)
+#plain(title: [Own engine and tones])[A note.]
