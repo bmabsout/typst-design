@@ -3,7 +3,7 @@
 //   #import "@local/typst-design:0.1.0": *
 //
 // Everything is reachable two ways: flat (the names below), and by module
-// (`colors.ramps`, `rlmath.state`, `templates.thesis.make-template`). Names
+// (`colors.ramps`, `rlmath.state`, `callout.flow-block`). Names
 // that would shadow Typst's own (`state`, `color`, `math`, `document`,
 // `figure`) are only reachable through their module.
 
@@ -17,19 +17,7 @@
 #import "src/icons.typ" as icons
 #import "src/fpl.typ" as fpl
 #import "src/figures.typ" as figures
-#import "src/templates/cv.typ" as cv
-#import "src/templates/resume.typ" as resume
-#import "src/templates/statement.typ" as statement-template
-#import "src/templates/thesis.typ" as thesis
 #import "src/templates/document.typ" as working
-
-#let templates = (
-  cv: cv,
-  resume: resume,
-  statement: statement-template,
-  thesis: thesis,
-  document: working,
-)
 
 // Color.
 #import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, apca, contrast, text-needs, reads, legibility, as-text, readable, tones, classic-tones, roles, palette, fulfillment, chart, swatch
@@ -48,10 +36,6 @@
 #import "src/icons.typ": fa, icon
 // FPL marks.
 #import "src/fpl.typ": fulfillment-color, percent, price, pie, trace, state-of
-// Templates.
-#import "src/templates/cv.typ": cv-style, cv-kit, cv-page
-#import "src/templates/resume.typ": resume-style, resume-kit, resume-page
-#import "src/templates/statement.typ": statement, title-line
-#import "src/templates/thesis.typ": thesis-colors, thesis-style, heading-style, thesis-rule, local-outline, make-template
+// The working document.
 #import "src/templates/document.typ": section-title, panel, dated, accent
 #let working-document = working.document

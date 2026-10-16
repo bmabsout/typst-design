@@ -122,12 +122,6 @@
 #assert.eq(state-of(0.6), "Watch")
 #assert.eq(state-of(0.9), "Fine")
 
-// 6. Compliance mode only blackens: the headings sample a black ramp.
-#let bu = thesis-style(colors: thesis-colors(compliance: "bu"))
-#for l in bu.heading.levels { assert.eq(hex(l.text.fill), "#000000") }
-#let identity = thesis-style()
-#assert.eq(hex(identity.heading.levels.at(0).text.fill), "#6a001a")
-
 // 7b. One color grows the whole identity: `ramp-from` gives back maroon and
 //     sienna from their strong samples, and any color sits at 30%.
 #for (name, shift) in (("maroon", 15deg), ("sienna", 10deg)) {
