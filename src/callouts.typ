@@ -3,7 +3,7 @@
 // Each kind owns a ramp: notes and definitions maroon, theorems rose,
 // algorithms blue, warnings orange. Its five colors are the ramp's `tones`.
 
-#import "color.typ": ramps, tones, classic-tones
+#import "color.typ": ramps, tones as _tones, classic-tones
 #import "marks.typ": capsule
 #import "span.typ": span
 
@@ -128,6 +128,8 @@
 /// - `classic`: draw callouts exactly as the dissertation was set: the
 ///   `seamless-block` engine and the `classic-tones`.
 /// - `engine`: override the block a titled callout is drawn with.
+/// - `tones`: override the colors a callout takes from its ramp: a function
+///   from a ramp to `(wash, line, title, supplement, ink, notice)`.
 #let callouts(
   title-size: 1.2em,
   radius: 12pt,
@@ -141,9 +143,10 @@
   figure: true,
   classic: false,
   engine: auto,
+  tones: auto,
 ) = {
   let engine = if engine != auto { engine } else if classic { seamless-block } else { flow-block }
-  let tones = if classic { classic-tones } else { tones }
+  let tones = if tones != auto { tones } else if classic { classic-tones } else { _tones }
   let wrap(body, kind, supplement, g) = if figure {
     std.figure(body, kind: kind, supplement: text(fill: tones(g).supplement, supplement))
   } else { body }

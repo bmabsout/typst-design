@@ -7,6 +7,9 @@ All notable changes to this package are recorded here. The format follows
 ## [Unreleased]
 
 ### Added
+- `callouts(tones:)`: a function from a ramp to a callout's colors, beside
+  `engine`, so a document can draw its callouts with its own block and its
+  own colors.
 - `span`: a stretch of the flow marked only where it really starts and ends.
   The opening mark stays with the first line, the closing mark is placed (it
   takes no room), spans sharing a `merge` key share a boundary, and `edge`
