@@ -260,17 +260,6 @@
   notice: readable(g, jobs.notice, need: text-needs.body, on: quiet(g, stops.fill)),
 )
 
-/// The callout tones the dissertation was set in, before the rules above:
-/// kept so it prints identically.
-#let classic-tones(g) = (
-  wash: g.sample(80%).desaturate(85%).lighten(85%),
-  line: g.sample(80%).desaturate(50%).lighten(50%),
-  title: g.sample(35%),
-  supplement: g.sample(40%),
-  ink: g.sample(15%),
-  notice: g.sample(50%),
-)
-
 // ------------------------------------------------------------------ roles --
 
 /// The three role colors: what is observed (states, inputs), what is acted

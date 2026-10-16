@@ -100,13 +100,7 @@
 #assert.eq(tones(ramps.rose).line, quiet(ramps.rose, stops.rule))
 #assert.eq(palette.rule, quiet(ramps.maroon, stops.rule))
 
-// 4. The classic tones are the dissertation's, value for value.
-#let ct = classic-tones(ramps.maroon)
-#assert.eq(hex(ct.wash), "#fff8f8")
-#assert.eq(hex(ct.line), "#fce0e1")
-#assert.eq(hex(ct.title), at(ramps.maroon, 35%))
-
-// Chart slots alternate soft and medium.
+// 4. Chart slots alternate soft and medium.
 #assert.eq(chart.len(), 6)
 
 // 5. The fulfillment scale runs bad (dark crimson) to good (teal).

@@ -16,11 +16,10 @@
 #import "src/math.typ" as rlmath
 #import "src/icons.typ" as icons
 #import "src/fpl.typ" as fpl
-#import "src/figures.typ" as figures
 #import "src/templates/document.typ" as working
 
 // Color.
-#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, apca, contrast, text-needs, reads, legibility, as-text, readable, tones, classic-tones, roles, palette, fulfillment, chart, swatch
+#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, apca, contrast, text-needs, reads, legibility, as-text, readable, tones, roles, palette, fulfillment, chart, swatch
 // Type.
 #import "src/type.typ": faces, ratio, scale, font-options, label-text, minor
 // Marks.
@@ -28,7 +27,7 @@
 // Spans: a stretch of the flow marked only where it really starts and ends.
 #import "src/span.typ": span, span-start, span-end
 // Callouts.
-#import "src/callouts.typ": seamless-block, flow-block, callouts, callout-rules, note, theorem, algorithm, notice
+#import "src/callouts.typ": flow-block, callouts, callout-rules, note, theorem, algorithm, notice
 #import "src/frames.typ": frame, frame-layer, frame-rules
 // Math.
 #import "src/math.typ": observed, acted, valued, rl, pmean, fbox, vecand, vecor, loss, expect, policy, sigmoid, stack-math, make-abbrv, abbreviations, abbreviation-table

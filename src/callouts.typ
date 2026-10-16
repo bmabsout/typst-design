@@ -3,60 +3,9 @@
 // Each kind owns a ramp: notes and definitions maroon, theorems rose,
 // algorithms blue, warnings orange. Its five colors are the ramp's `tones`.
 
-#import "color.typ": ramps, tones as _tones, classic-tones
+#import "color.typ": ramps, tones as _tones
 #import "marks.typ": capsule
 #import "span.typ": span
-
-/// A titled block whose bottom edge fades out, so a callout that breaks
-/// across a page reads as continuing. The title is kept with the content.
-#let seamless-block(
-  title: none,
-  content,
-  stroke: 1pt,
-  fill: blue.lighten(80%),
-  radius: 6pt,
-  inset: 1em,
-) = {
-  let special_stroke = (
-    ..stroke,
-    paint: gradient.linear(stroke.paint.transparentize(100%), stroke.paint.transparentize(0%), stroke.paint.transparentize(0%), angle: 90deg).sharp(3),
-  )
-  let special_fill = gradient.linear(fill.transparentize(100%), fill.transparentize(0%), fill.transparentize(0%), angle: 90deg).sharp(3)
-  let vertical-adjust = stroke.thickness / 2
-  v(1.5em, weak: true)
-  block(
-    spacing: -2pt,
-    sticky: true,
-    radius: (top-left: radius, top-right: radius),
-    stroke: (top: stroke, left: stroke, right: stroke),
-    fill: fill,
-    height: radius * 2 + 1em,
-    width: 100%,
-    inset: inset,
-    v(0.5em) + title,
-  )
-  block(
-    spacing: -2pt,
-    stroke: (left: stroke, right: stroke),
-    fill: fill,
-    inset: inset,
-    width: 100%,
-    outset: (top: -vertical-adjust, bottom: -vertical-adjust),
-    breakable: true,
-    content,
-  )
-  v(-1em)
-  block(
-    spacing: -2pt,
-    radius: (bottom-left: radius, bottom-right: radius),
-    stroke: (bottom: special_stroke, left: special_stroke, right: special_stroke),
-    outset: (top: 0em),
-    fill: special_fill,
-    width: 100%,
-    height: radius * 2,
-  )
-  v(1.5em, weak: true)
-}
 
 /// A rounded block that breaks across pages the way a long callout should:
 /// rounded only at its real top and bottom, and simply open where a page
@@ -125,8 +74,6 @@
 /// - `title-size`: the title's size, bold italic in the ramp's title tone.
 /// - `figure`: wrap each callout in a `figure` of its `kind`, so it can be
 ///   labeled and referenced (`@thm:x`). Off for documents with no figures.
-/// - `classic`: draw callouts exactly as the dissertation was set: the
-///   `seamless-block` engine and the `classic-tones`.
 /// - `engine`: override the block a titled callout is drawn with.
 /// - `tones`: override the colors a callout takes from its ramp: a function
 ///   from a ramp to `(wash, line, title, supplement, ink, notice)`.
@@ -141,12 +88,9 @@
   algorithm-ramp: ramps.blue,
   notice-ramp: ramps.orange,
   figure: true,
-  classic: false,
-  engine: auto,
-  tones: auto,
+  engine: flow-block,
+  tones: _tones,
 ) = {
-  let engine = if engine != auto { engine } else if classic { seamless-block } else { flow-block }
-  let tones = if tones != auto { tones } else if classic { classic-tones } else { _tones }
   let wrap(body, kind, supplement, g) = if figure {
     std.figure(body, kind: kind, supplement: text(fill: tones(g).supplement, supplement))
   } else { body }
