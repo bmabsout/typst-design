@@ -1,6 +1,6 @@
 # typst-design
 
-A design system for documents, built from a few hand-picked rules and written in Typst. It covers OKLCH color ramps, capsule rules and diamond separators, callouts that break cleanly across pages, role-colored math, fulfillment marks, and templates for theses, CVs, résumés, statements and working documents.
+A design system for documents, built from a few hand-picked rules and written in Typst. It covers OKLCH color ramps, capsule rules and diamond separators, callouts that break cleanly across pages, role-colored math, fulfillment marks, and a working-document template. Documents with a look of their own (a CV, a thesis) keep their templates beside them and build on these tools.
 
 ![Quick start](docs/images/quickstart.png)
 
@@ -14,9 +14,9 @@ A design system for documents, built from a few hand-picked rules and written in
 - **Color from gradients, not swatches.** Every color is a ramp and a position (`ramps.maroon.sample(30%)`). Change a ramp's two endpoints and every heading, rule, callout and plot follows.
 - **One color in, a whole palette out.** `ramp-from(color)` grows a ramp from a single color, and three rules place every sample on it. Ink tones sit on a 15% grid. Text is checked against the measures designers use, APCA and WCAG 2, and moves deeper along its ramp only as far as it must to pass. Quiet tones carry chroma in proportion to their distance from white, so washes are equally quiet in every hue.
 - **Callouts that break like prose.** A long note is rounded only where it really starts and ends. Where a page cuts it, it is simply open.
-- **Templates as data.** Each template takes its whole look as one dictionary. Recolor a CV from one argument, or switch a thesis to a university's black-heading compliance mode.
+- **Tools, not documents.** The package holds what any document can use. A particular document's template lives with that document and imports these tools.
 - **Relative units.** Sizes are steps of one ×1.2 type scale and `em`. Nothing is in pixels.
-- **No dependencies.** The CeTZ figure primitives take `cetz` as an argument, so you bring your own.
+- **No dependencies.** The package imports no other package.
 
 ## Contents
 
@@ -25,7 +25,7 @@ A design system for documents, built from a few hand-picked rules and written in
 - [Marks](#marks)
 - [Spans](#spans)
 - [Callouts](#callouts)
-- [Templates](#templates)
+- [Working document](#working-document)
 - [Fulfillment marks](#fulfillment-marks)
 - [Typography](#typography)
 - [API overview](#api-overview)
@@ -60,7 +60,7 @@ Then import it:
 #import "@local/typst-design:0.1.0": *
 ```
 
-The identity's faces are Source Serif 4, Crimson Pro and Source Sans 3. The CV family uses EB Garamond, Libertinus Sans and Font Awesome 5 Free. `nix develop` provides all of them.
+The identity's faces are Source Serif 4, Crimson Pro and Source Sans 3. A second family, EB Garamond with Libertinus Sans labels and Font Awesome 5 Free icons, sets documents in a book voice, such as a CV. `nix develop` provides all of them.
 
 ## Color
 
@@ -73,7 +73,7 @@ A **ramp** is a straight line through OKLCH from black to near-white at one hue.
 **One color is enough.** `ramp-from(color)` grows a whole identity ramp whose strong sample (30%) is exactly that color. Lightness runs straight to white, chroma fades, and the hue warms a little, as maroon's does. Every heading, wash, rule and mark then follows from the rules below. Pick a color dark enough for headings (about 7:1 on white or more).
 
 ```typst
-#let style = cv-style(ramp: rgb("#6a001a"))  // a color works wherever a ramp does
+#let identity = ramp-from(rgb("#6a001a"))  // the whole ramp, from its strong sample
 ```
 
 | Ramp | From | To | Used for |
@@ -120,7 +120,7 @@ The **diamond** is the only inline separator: a rounded 0.4em square turned 45°
 
 ## Spans
 
-A span is a stretch of the document that may break across pages and is marked only where it really starts and ends. A page break is not a boundary. Callouts and CV sections are both spans: a callout's rounded caps and a section's rules are its opening and closing marks.
+A span is a stretch of the document that may break across pages and is marked only where it really starts and ends. A page break is not a boundary. A callout is a span whose marks are its rounded caps, and a document's sections can be spans whose marks are rules.
 
 ```typst
 #span(
@@ -161,34 +161,17 @@ Typst rounds and closes every fragment of a breakable block. `flow-block` carrie
 #let (note, theorem) = callouts(engine: frame)
 ```
 
-Use `callouts(..)` to configure the family, for example `callouts(title-size: 14pt, theorem-ramp: ramps.teal)`. `classic: true` reproduces an earlier engine and tones exactly.
+Use `callouts(..)` to configure the family, for example `callouts(title-size: 14pt, theorem-ramp: ramps.teal)`. Two hooks let a document bring its own look: `engine` draws a titled callout, and `tones` maps a ramp to a callout's colors (`wash`, `line`, `title`, `supplement`, `ink`, `notice`).
 
-## Templates
+## Working document
 
-Each template is a style dictionary, a kit of functions built from it, and a page rule.
-
-**CV.** Pass `ramp` to recolor the whole CV. A section is a span: its title stays with its first entry, and it breaks between entries. `rules` picks where its rules fall: `"ends"` (the default) puts one where a section really starts and ends, and `"pages"` puts one at every page edge.
+`working-document` sets notes and reports: a serif body, sans capitals over a capsule rule for sections, and one accent for titles, links and ornaments. `section-title`, `panel`, `dated` and `accent` are its parts.
 
 ```typst
-#let style = cv-style(owner: "Author A.", rules: "ends")  // the owner's name is bolded in author lists
-#let kit = cv-kit(style)
-#show: cv-page.with(style: style)
-
-#(kit.section)("Education", (
-  (kit.entry)((kit.entry-heading)(l: [Ph.D.], m: [A University], r: [2019 -- 2024]), [Dissertation: _…_]),
-))
+#show: working-document.with(title: [Field notes])
+== Findings
+#dated[Ramp contrast checked against APCA][October 2026]
 ```
-
-![CV example](docs/images/cv.png)
-
-**Thesis.** This builds the front matter in roman numerals, chapters with a capsule rule and a local contents, headings that darken with rank, and references colored like their target. It includes Boston University's required pages, and `compliance: "bu"` gives the black headings its thesis office requires.
-
-```typst
-#let t = make-template(style: thesis-style(colors: thesis-colors(compliance: "bu")))
-#show: (t.assemble_thesis_document).with(title_page: …, main: …)
-```
-
-**Résumé, statement, working document.** `resume-kit`, `statement` (research and teaching statements and letters, titled "Name ◆ Title") and `working-document` (notes and reports in the CV's voice).
 
 ## Fulfillment marks
 
@@ -207,25 +190,24 @@ A fulfillment is a value in [0, 1] saying how well a requirement is met. Low is 
 | Source Serif 4 | every sentence, and headings at the Subhead optical size |
 | Crimson Pro | names, titles, display moments (step 2 and up) |
 | Source Sans 3 | short UPPERCASE labels only (`label-text`) |
-| EB Garamond, Libertinus Sans | the CV family |
+| EB Garamond, Libertinus Sans | the book family, for documents such as a CV (`faces.garamond`, `faces.libertinus-sans`) |
 
 `scale(n)` is step *n* of one ×1.2 scale. `font-options` holds body presets matched by x-height.
 
 ## API overview
 
-Everything is exported flat, and also by module: `colors`, `typography`, `marks`, `spans`, `callout`, `frames`, `rlmath`, `icons`, `fpl`, `figures` and `templates`. Names that would shadow Typst's own (`state`, `document`) are only reachable through their module.
+Everything is exported flat, and also by module: `colors`, `typography`, `marks`, `spans`, `callout`, `frames`, `rlmath`, `icons`, `fpl` and `working`. Names that would shadow Typst's own (`state`, `document`) are only reachable through their module.
 
 | Module | Exports |
 | --- | --- |
-| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `readable`, `text-needs`, `reads`, `apca`, `contrast`, `as-text`, `legibility`, `quiet`, `quietness`, `shade`, `tones`, `classic-tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
+| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `readable`, `text-needs`, `reads`, `apca`, `contrast`, `as-text`, `legibility`, `quiet`, `quietness`, `shade`, `tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
 | span | `span`, `span-start`, `span-end` |
-| callouts | `callouts`, `callout-rules`, `flow-block`, `frame`, `frame-rules`, `frame-layer`, `seamless-block`, `note`, `theorem`, `algorithm`, `notice` |
+| callouts | `callouts`, `callout-rules`, `flow-block`, `frame`, `frame-rules`, `frame-layer`, `note`, `theorem`, `algorithm`, `notice` |
 | math | `rlmath.state` / `action` / `reward`, `rl`, `pmean`, `fbox`, `loss`, `expect`, `policy`, `make-abbrv`, `abbreviations`, `abbreviation-table` |
 | fulfillment | `fulfillment-color`, `pie`, `price`, `trace`, `percent`, `state-of` |
-| figures | `figures.bell(cetz, ..)`, `figures.segment(cetz, ..)` |
-| templates | `cv-style`, `cv-kit`, `cv-page`, `resume-style`, `resume-kit`, `resume-page`, `statement`, `title-line`, `thesis-colors`, `thesis-style`, `make-template`, `working-document`, `section-title`, `panel`, `dated`, `accent` |
+| working document | `working-document`, `section-title`, `panel`, `dated`, `accent` |
 
 Each function's documentation is in its source file's `///` comments.
 
@@ -246,4 +228,4 @@ Compiling `tests/laws.typ` runs every `assert` in it. It checks that the ramps a
 
 ## License
 
-[MIT](LICENSE) © Bassel El Mabsout. The design is his and was picked by hand: the ramps and where each job samples them, the capsule rule, the diamond, the callouts, the type pairing and every template's look. Use it freely and keep the notice.
+[MIT](LICENSE) © Bassel El Mabsout. The design is his and was picked by hand: the ramps and where each job samples them, the capsule rule, the diamond, the callouts and the type pairing. Use it freely and keep the notice.
