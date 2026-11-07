@@ -278,31 +278,38 @@
 
 /// The identity's named colors on paper, each a sample or a quiet tone of
 /// the identity ramp. `palette-of` takes the ramp, the paper and the two ink
-/// colors, and `palette` is it for maroon on white.
+/// colors, and `palette` is it for maroon on white. An `accent` ramp, when
+/// given, takes over the secondary and the link from the identity.
 ///
-/// - `primary`, `secondary`: the strong and medium samples.
-/// - `link`: the strong sample, deepened until it reads as small text on
-///   the paper.
+/// - `primary`: the identity's strong sample.
+/// - `secondary`: the accent's medium sample, deepened until it reads at
+///   subhead size on the paper.
+/// - `link`: the accent's strong sample, deepened until it reads as small
+///   text on the paper.
 /// - `ink`, `ink-muted`: the near-black body text and its secondary.
 /// - `paper`: the ground every text color is checked against.
 /// - `mark-fill`, `rule`, `mark-line`: the quiet tones at 97%, 90% and 80%:
 ///   panels and the diamond's fill, the capsule rule, the diamond's outline.
 #let palette-of(
   identity,
+  accent: auto,
   paper: white,
   ink: oklch(28.91%, 0, 0deg),
   ink-muted: oklch(45.68%, 0, 0deg),
-) = (
-  primary: identity.sample(stops.strong),
-  secondary: identity.sample(stops.medium),
-  link: readable(identity, stops.strong, on: paper),
-  ink: ink,
-  ink-muted: ink-muted,
-  paper: paper,
-  mark-fill: quiet(identity, stops.fill),
-  rule: quiet(identity, stops.rule),
-  mark-line: quiet(identity, stops.line),
-)
+) = {
+  let accent = if accent == auto { identity } else { accent }
+  (
+    primary: identity.sample(stops.strong),
+    secondary: readable(accent, stops.medium, need: text-needs.subhead, on: paper),
+    link: readable(accent, stops.strong, on: paper),
+    ink: ink,
+    ink-muted: ink-muted,
+    paper: paper,
+    mark-fill: quiet(identity, stops.fill),
+    rule: quiet(identity, stops.rule),
+    mark-line: quiet(identity, stops.line),
+  )
+}
 #let palette = palette-of(ramps.maroon)
 
 /// The fulfillment scale (FPL): a value in [0, 1] as a color, bad to good.

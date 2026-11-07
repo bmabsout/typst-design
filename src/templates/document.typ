@@ -12,6 +12,9 @@
   mono: ("Libertinus Mono", "DejaVu Sans Mono"),
 )
 
+/// The body text's near-black, a hair warmer than the palette's ink.
+#let doc-ink = oklch(19.77%, 0.007, 17.5deg)
+
 /// The rule a section title stands on.
 #let doc-rule = capsule-rule(paint: palette.rule)
 
@@ -48,7 +51,7 @@
 ///   level 1  the document's title: large serif in the accent, a rule under.
 ///   level 2  a section: sans capitals over the rule.
 ///   level 3  a subsection: sans, medium, the secondary.
-#let document(body, size: 11pt, title: none, fonts: doc-fonts, paper: "a4", ink: oklch(19.77%, 0.007, 17.5deg), palette: palette) = {
+#let document(body, size: 11pt, title: none, fonts: doc-fonts, paper: "a4", ink: doc-ink, palette: palette) = {
   let primary = palette.primary
   let rule = capsule-rule(paint: palette.rule)
   let diamond = diamond.with(fill: palette.mark-fill, stroke: 0.1em + palette.mark-line)

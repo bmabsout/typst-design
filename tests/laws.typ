@@ -196,6 +196,23 @@
 #assert.eq(look.callout-ramps.note.stops(), look.identity.stops(), message: "notes take the identity")
 #assert.eq(look.faces.sans, ("Libertinus Sans",))
 #assert.eq(look.faces.serif, faces.serif, message: "faces not named keep the package's")
+// An accent takes over the secondary and the link, still read on the paper,
+// and a palette color named in the theme is set exactly, after the rules.
+// Body text follows the theme's ink once it names one.
+#assert.eq(kit.body-ink, working.doc-ink, message: "the default body ink is the document's")
+#let gilt = theme(
+  identity: rgb("#3b1319"),
+  accent: ramps.gold,
+  paper: warm,
+  ink: rgb("#3b1319"),
+  palette: (primary: rgb("#3b1319")),
+)
+#assert.eq(gilt.ramps.accent.stops(), ramps.gold.stops())
+#assert.eq(gilt.palette.secondary, readable(ramps.gold, stops.medium, need: text-needs.subhead, on: warm))
+#assert(reads(gilt.palette.link, text-needs.small, on: warm), message: "an accent's links read on the paper")
+#assert.eq(gilt.palette.primary, rgb("#3b1319"), message: "a named palette color is set exactly")
+#assert.eq(gilt.palette.rule, quiet(gilt.identity, stops.rule), message: "colors not named keep the rules")
+#assert.eq(gilt.body-ink, rgb("#3b1319"), message: "body text follows a named ink")
 // The kit's components are the package's own, with the theme's defaults: an
 // argument passed at the call still wins.
 #let k = themed(look)

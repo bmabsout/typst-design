@@ -18,16 +18,23 @@
 #import "type.typ" as typography: label-text
 #import "marks.typ": capsule, capsule-rule, diamond, sep
 #import "callouts.typ": callouts
-#import "templates/document.typ": section-title, panel, accent, document
+#import "templates/document.typ": section-title, panel, accent, document, doc-ink
 
 /// A theme. Every argument defaults to the package's own look.
 ///
 /// - `identity`: the identity ramp, or one color to grow it from
-///   (`ramp-from`). Headings, labels, links, rules and notes sample it.
+///   (`ramp-from`). Headings, labels, rules and notes sample it.
+/// - `accent`: the ramp (or one color) behind emphasis and links, the
+///   palette's `secondary` and `link`. The identity by default.
 /// - `paper`: the ground. Text colors are deepened until they read on it.
-/// - `ink`, `ink-muted`: body text and its secondary.
+/// - `ink`, `ink-muted`: the palette's text and its secondary.
+/// - `body-ink`: the working document's body text. Its own near-black by
+///   default, or `ink` when the theme names one.
+/// - `palette`: palette colors to set exactly, by name, after the rules have
+///   drawn the rest (a brand swatch as `primary`, say).
 /// - `ramps`: named ramps to add to the package's or to replace them. The
-///   identity is also reachable as `ramps.identity`.
+///   identity and the accent are also reachable as `ramps.identity` and
+///   `ramps.accent`.
 /// - `roles`: the ramps behind `observed`, `acted` and `valued`, by name.
 /// - `callouts`: the ramps behind `note`, `theorem`, `algorithm` and
 ///   `notice`, by name. Notes take the identity unless named here.
@@ -36,26 +43,40 @@
 /// - `chart`: the categorical series colors, or `auto` for the package's.
 #let theme(
   identity: colors.ramps.maroon,
+  accent: auto,
   paper: white,
-  ink: colors.palette.ink,
+  ink: auto,
   ink-muted: colors.palette.ink-muted,
+  body-ink: auto,
+  palette: (:),
   ramps: (:),
   roles: (:),
   callouts: (:),
   faces: (:),
   chart: auto,
 ) = {
-  let identity = if type(identity) == color { ramp-from(identity) } else { identity }
-  let all = colors.ramps + (identity: identity) + ramps
+  let grow(r) = if type(r) == color { ramp-from(r) } else { r }
+  let identity = grow(identity)
+  let accent = if accent == auto { identity } else { grow(accent) }
+  let all = colors.ramps + (identity: identity, accent: accent) + ramps
   let role-ramps = (observed: all.blue, acted: all.rose, valued: all.teal) + roles
+  let drawn = palette-of(
+    identity,
+    accent: accent,
+    paper: paper,
+    ink: if ink == auto { colors.palette.ink } else { ink },
+    ink-muted: ink-muted,
+  )
   (
     identity: identity,
+    accent: accent,
     paper: paper,
+    body-ink: if body-ink != auto { body-ink } else if ink != auto { ink } else { doc-ink },
     ramps: all,
     role-ramps: role-ramps,
     callout-ramps: (note: identity, theorem: all.rose, algorithm: all.blue, notice: all.orange) + callouts,
     faces: typography.faces + faces,
-    palette: palette-of(identity, paper: paper, ink: ink, ink-muted: ink-muted),
+    palette: drawn + palette,
     roles: roles-of(role-ramps.observed, role-ramps.acted, role-ramps.valued, on: paper),
     chart: if chart == auto { colors.chart } else { chart },
   )
@@ -65,8 +86,8 @@
 #let default-theme = theme()
 
 /// The kit in a theme's look: the theme's fields (`palette`, `ramps`,
-/// `roles`, `faces`, `chart`, `paper`, `identity`) and every component that
-/// draws in a color or a face, with the theme's applied.
+/// `roles`, `faces`, `chart`, `paper`, `identity`, `accent`, `body-ink`) and
+/// every component that draws in a color or a face, with the theme's applied.
 ///
 ///   #let (palette, ramps, note, capsule-rule, working-document) = themed(look)
 #let themed(t) = {
@@ -105,6 +126,6 @@
     section-title: section-title.with(palette: t.palette),
     panel: panel.with(palette: t.palette),
     accent: accent.with(palette: t.palette),
-    working-document: document.with(palette: t.palette),
+    working-document: document.with(palette: t.palette, ink: t.body-ink),
   )
 }

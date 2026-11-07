@@ -111,12 +111,13 @@ Three rules decide where each job samples a ramp:
 
 ## Themes
 
-A **theme** is a look as data: an identity ramp, the paper, the ink, the ramps behind the roles and the callouts, and the faces. `theme()` with no arguments is the package's own look, so a theme names only what differs. Every other color follows from the sampling rules above, and text colors are deepened until they read on the theme's paper.
+A **theme** is a look as data: an identity ramp, an accent for emphasis and links, the paper, the ink, the ramps behind the roles and the callouts, and the faces. `theme()` with no arguments is the package's own look, so a theme names only what differs. Every other color follows from the sampling rules above, and text colors are deepened until they read on the theme's paper.
 
 ```typst
 #let look = theme(
   identity: rgb("#1f4e79"),           // a ramp, or one color to grow it from
   paper: oklch(97.5%, 0.008, 75deg),
+  accent: ramps.gold,                 // secondary and link; the identity by default
   callouts: (theorem: ramps.gold),    // also roles: (...), ramps: (...), faces: (...)
 )
 #let (palette, capsule-rule, diamond, note, theorem, ..) = themed(look)
@@ -131,7 +132,9 @@ A **theme** is a look as data: an identity ramp, the paper, the ink, the ramps b
 #let (palette, ramps, capsule-rule, note) = (kit.palette, kit.ramps, kit.capsule-rule, kit.note)
 ```
 
-The flat names (`palette`, `note`, `capsule-rule` and the rest) are the default theme's kit, so documents that never name a theme are unchanged. `palette-of(ramp, paper:)` and `roles-of(observed, acted, valued, on:)` are the two derivations a theme is built from, for a document that wants only those.
+A brand that fixes some colors exactly names them in `palette: (primary: rgb("#3b1319"))`, set after the rules have drawn the rest. The working document's body text is its own near-black until the theme names an `ink` (or a `body-ink`), and then it follows.
+
+The flat names (`palette`, `note`, `capsule-rule` and the rest) are the default theme's kit, so documents that never name a theme are unchanged. `palette-of(ramp, accent:, paper:)` and `roles-of(observed, acted, valued, on:)` are the two derivations a theme is built from, for a document that wants only those.
 
 ![Themes](docs/images/themes.png)
 
