@@ -69,7 +69,6 @@
   )
   (
     identity: identity,
-    accent: accent,
     paper: paper,
     body-ink: if body-ink != auto { body-ink } else if ink != auto { ink } else { doc-ink },
     ramps: all,
@@ -86,8 +85,9 @@
 #let default-theme = theme()
 
 /// The kit in a theme's look: the theme's fields (`palette`, `ramps`,
-/// `roles`, `faces`, `chart`, `paper`, `identity`, `accent`, `body-ink`) and
-/// every component that draws in a color or a face, with the theme's applied.
+/// `roles`, `faces`, `chart`, `paper`, `identity`, `body-ink`) and every
+/// component that draws in a color or a face, with the theme's applied. The
+/// accent ramp is `ramps.accent`, since `accent` is the component.
 ///
 ///   #let (palette, ramps, note, capsule-rule, working-document) = themed(look)
 #let themed(t) = {
