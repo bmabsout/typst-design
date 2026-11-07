@@ -22,6 +22,7 @@ A design system for documents, built from a few hand-picked rules and written in
 
 - [Installation](#installation)
 - [Color](#color)
+- [Themes](#themes)
 - [Marks](#marks)
 - [Spans](#spans)
 - [Callouts](#callouts)
@@ -107,6 +108,35 @@ Three rules decide where each job samples a ramp:
 `palette` names the identity's colors (`primary`, `secondary`, `link`, `ink`, `ink-muted`, `mark-fill`, `rule`, `mark-line`). `chart` gives six categorical colors that alternate soft and medium, so neighbors differ in lightness as well as hue. On the dark ground `paper-dark`, `dark-stop(t)` moves a text tone so it keeps the contrast it has on white, and `quiet-dark(ramp, t)` is the matching quiet tone. Text tones keep 4.5:1 there too.
 
 ![Gallery: ramps and palette](docs/images/gallery.png)
+
+## Themes
+
+A **theme** is a look as data: an identity ramp, an accent for emphasis and links, the paper, the ink, the ramps behind the roles and the callouts, and the faces. `theme()` with no arguments is the package's own look, so a theme names only what differs. Every other color follows from the sampling rules above, and text colors are deepened until they read on the theme's paper.
+
+```typst
+#let look = theme(
+  identity: rgb("#1f4e79"),           // a ramp, or one color to grow it from
+  paper: oklch(97.5%, 0.008, 75deg),
+  accent: ramps.gold,                 // secondary and link; the identity by default
+  callouts: (theorem: ramps.gold),    // also roles: (...), ramps: (...), faces: (...)
+)
+#let (palette, capsule-rule, diamond, note, theorem, ..) = themed(look)
+```
+
+`themed(look)` returns the kit in that look: the theme's `palette`, `ramps`, `roles`, `faces` and `chart`, and every component that draws in a color or a face (`capsule-rule`, `diamond`, `sep`, `label-text`, the callouts, `section-title`, `panel`, `accent`, `working-document`) with the theme's colors as its defaults. Each component is the package's own function, applied with `.with`, so an argument passed at the call still wins. A document with a look of its own keeps its theme in one file and imports its kit from there:
+
+```typst
+// look.typ
+#import "@local/typst-design:0.1.0": theme, themed, ramps, stops, quiet
+#let kit = themed(theme(identity: rgb("#1f4e79")))
+#let (palette, ramps, capsule-rule, note) = (kit.palette, kit.ramps, kit.capsule-rule, kit.note)
+```
+
+A brand that fixes some colors exactly names them in `palette: (primary: rgb("#3b1319"))`, set after the rules have drawn the rest. The working document's body text is its own near-black until the theme names an `ink` (or a `body-ink`), and then it follows.
+
+The flat names (`palette`, `note`, `capsule-rule` and the rest) are the default theme's kit, so documents that never name a theme are unchanged. `palette-of(ramp, accent:, paper:)` and `roles-of(observed, acted, valued, on:)` are the two derivations a theme is built from, for a document that wants only those.
+
+![Themes](docs/images/themes.png)
 
 ## Marks
 
@@ -200,7 +230,8 @@ Everything is exported flat, and also by module: `colors`, `typography`, `marks`
 
 | Module | Exports |
 | --- | --- |
-| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `readable`, `text-needs`, `reads`, `apca`, `contrast`, `as-text`, `legibility`, `quiet`, `quietness`, `shade`, `tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `palette`, `chart`, `fulfillment`, `swatch` |
+| color | `ramp`, `ramp-from`, `ramps`, `stops`, `jobs`, `readable`, `text-needs`, `reads`, `apca`, `contrast`, `as-text`, `legibility`, `quiet`, `quietness`, `shade`, `tones`, `mirror`, `paper-dark`, `dark-stop`, `quiet-dark`, `roles`, `roles-of`, `palette`, `palette-of`, `chart`, `fulfillment`, `swatch` |
+| theme | `theme`, `themed`, `default-theme` |
 | type | `faces`, `scale`, `ratio`, `font-options`, `label-text`, `minor` |
 | marks | `capsule`, `capsule-rule`, `diamond`, `sep` |
 | span | `span`, `span-start`, `span-end` |

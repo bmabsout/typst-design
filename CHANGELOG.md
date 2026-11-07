@@ -7,6 +7,20 @@ All notable changes to this package are recorded here. The format follows
 ## [Unreleased]
 
 ### Added
+- Themes. `theme(identity:, accent:, paper:, ink:, ink-muted:, body-ink:,
+  palette:, ramps:, roles:, callouts:, faces:, chart:)` is a look as data, and `theme()` is the
+  package's own. `themed(theme)` returns the kit in that look: its palette,
+  ramps, roles, faces and chart, and every component that draws in a color
+  or a face, with the theme's colors as defaults (`.with`, so a call's own
+  arguments still win). The flat names are the default theme's kit, so
+  existing documents print exactly as before.
+- `palette-of(ramp, accent:, paper:, ink:, ink-muted:)` and
+  `roles-of(observed, acted, valued, on:)`: the derivations a theme is built
+  from. `palette` and `roles` are them for maroon, blue, rose and teal on
+  white.
+- `section-title`, `panel`, `accent` and `working-document` take a
+  `palette:`, and `label-text` a `font:`. A theme's paper that is not white
+  fills the working document's pages.
 - `callouts(tones:)`: a function from a ramp to a callout's colors, beside
   `engine`, so a document can draw its callouts with its own block and its
   own colors.

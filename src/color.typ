@@ -264,33 +264,53 @@
 
 /// The three role colors: what is observed (states, inputs), what is acted
 /// (actions, outputs) and what is valued (rewards, objectives). The same
-/// color marks a role in prose, in equations and in plots.
-#let roles = (
-  observed: readable(ramps.blue, jobs.role),
-  acted: readable(ramps.rose, jobs.role),
-  valued: readable(ramps.teal, jobs.role),
+/// color marks a role in prose, in equations and in plots. `roles-of` takes
+/// the three ramps and the paper the colors must read on, and `roles` is it
+/// for blue, rose and teal on white.
+#let roles-of(observed, acted, valued, on: white) = (
+  observed: readable(observed, jobs.role, on: on),
+  acted: readable(acted, jobs.role, on: on),
+  valued: readable(valued, jobs.role, on: on),
 )
+#let roles = roles-of(ramps.blue, ramps.rose, ramps.teal)
 
 // ---------------------------------------------------------------- palette --
 
 /// The identity's named colors on paper, each a sample or a quiet tone of
-/// the maroon ramp.
+/// the identity ramp. `palette-of` takes the ramp, the paper and the two ink
+/// colors, and `palette` is it for maroon on white. An `accent` ramp, when
+/// given, takes over the secondary and the link from the identity.
 ///
-/// - `primary`, `secondary`: the strong and medium samples.
+/// - `primary`: the identity's strong sample.
+/// - `secondary`: the accent's medium sample, deepened until it reads at
+///   subhead size on the paper.
+/// - `link`: the accent's strong sample, deepened until it reads as small
+///   text on the paper.
 /// - `ink`, `ink-muted`: the near-black body text and its secondary.
+/// - `paper`: the ground every text color is checked against.
 /// - `mark-fill`, `rule`, `mark-line`: the quiet tones at 97%, 90% and 80%:
 ///   panels and the diamond's fill, the capsule rule, the diamond's outline.
-#let palette = (
-  primary: ramps.maroon.sample(stops.strong),
-  secondary: ramps.maroon.sample(stops.medium),
-  link: readable(ramps.maroon, stops.strong),
+#let palette-of(
+  identity,
+  accent: auto,
+  paper: white,
   ink: oklch(28.91%, 0, 0deg),
   ink-muted: oklch(45.68%, 0, 0deg),
-  paper: white,
-  mark-fill: quiet(ramps.maroon, stops.fill),
-  rule: quiet(ramps.maroon, stops.rule),
-  mark-line: quiet(ramps.maroon, stops.line),
-)
+) = {
+  let accent = if accent == auto { identity } else { accent }
+  (
+    primary: identity.sample(stops.strong),
+    secondary: readable(accent, stops.medium, need: text-needs.subhead, on: paper),
+    link: readable(accent, stops.strong, on: paper),
+    ink: ink,
+    ink-muted: ink-muted,
+    paper: paper,
+    mark-fill: quiet(identity, stops.fill),
+    rule: quiet(identity, stops.rule),
+    mark-line: quiet(identity, stops.line),
+  )
+}
+#let palette = palette-of(ramps.maroon)
 
 /// The fulfillment scale (FPL): a value in [0, 1] as a color, bad to good.
 /// Low is urgent. Five OKLCH stops: the crimson of the identity, copper,

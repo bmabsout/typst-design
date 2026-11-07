@@ -168,3 +168,54 @@
 #let boxed(title: none, body, ..style) = block(..style, [#title \ #body])
 #let (note: plain) = callouts(engine: boxed, tones: mine, figure: false)
 #plain(title: [Own engine and tones])[A note.]
+
+// 11. A theme is a look as data, and `theme()` is the package's own look:
+//     its kit draws exactly what the flat names draw. A theme grown from one
+//     color prints that color as its primary, and its text colors read on
+//     its own paper.
+#let kit = themed(default-theme)
+#assert.eq(kit.palette, palette, message: "the default theme's palette is the package's")
+#assert.eq(kit.roles, roles, message: "the default theme's roles are the package's")
+#assert.eq(kit.chart, chart)
+#assert.eq(kit.ramps.identity.stops(), ramps.maroon.stops())
+#assert.eq(kit.faces, faces)
+#let warm = oklch(97.5%, 0.008, 75deg)
+#let look = theme(
+  identity: rgb("#3b1319"),
+  paper: warm,
+  roles: (valued: ramps.gold),
+  callouts: (theorem: ramps.teal),
+  faces: (sans: ("Libertinus Sans",)),
+)
+#assert.eq(hex(look.palette.primary), "#3b1319", message: "a theme grown from one color prints it")
+#assert.eq(look.palette.paper, warm)
+#assert(reads(look.palette.link, text-needs.small, on: warm), message: "links read on the theme's paper")
+#for (role, c) in look.roles { assert(reads(c, text-needs.small, on: warm), message: role + " reads on the theme's paper") }
+#assert.eq(look.role-ramps.valued.stops(), ramps.gold.stops())
+#assert.eq(look.callout-ramps.theorem.stops(), ramps.teal.stops())
+#assert.eq(look.callout-ramps.note.stops(), look.identity.stops(), message: "notes take the identity")
+#assert.eq(look.faces.sans, ("Libertinus Sans",))
+#assert.eq(look.faces.serif, faces.serif, message: "faces not named keep the package's")
+// An accent takes over the secondary and the link, still read on the paper,
+// and a palette color named in the theme is set exactly, after the rules.
+// Body text follows the theme's ink once it names one.
+#assert.eq(kit.body-ink, working.doc-ink, message: "the default body ink is the document's")
+#let gilt = theme(
+  identity: rgb("#3b1319"),
+  accent: ramps.gold,
+  paper: warm,
+  ink: rgb("#3b1319"),
+  palette: (primary: rgb("#3b1319")),
+)
+#assert.eq(gilt.ramps.accent.stops(), ramps.gold.stops())
+#assert.eq(gilt.palette.secondary, readable(ramps.gold, stops.medium, need: text-needs.subhead, on: warm))
+#assert(reads(gilt.palette.link, text-needs.small, on: warm), message: "an accent's links read on the paper")
+#assert.eq(gilt.palette.primary, rgb("#3b1319"), message: "a named palette color is set exactly")
+#assert.eq(gilt.palette.rule, quiet(gilt.identity, stops.rule), message: "colors not named keep the rules")
+#assert.eq(gilt.body-ink, rgb("#3b1319"), message: "body text follows a named ink")
+// The kit's components are the package's own, with the theme's defaults: an
+// argument passed at the call still wins.
+#let k = themed(look)
+#(k.note)(title: [A themed note])[In Tamarind.]
+#(k.sep)[a][b] #(k.capsule-rule)() #(k.capsule-rule)(paint: black) #(k.accent)[accent] #(k.panel)[panel]
+#(k.label-text)[label] #(k.section-title)[A themed section]
