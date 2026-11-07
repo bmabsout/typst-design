@@ -2,6 +2,10 @@
 //
 //   #import "@local/typst-design:0.1.0": *
 //
+// A document with a look of its own builds a theme and takes its kit from it:
+//
+//   #let (palette, note, capsule-rule) = themed(theme(identity: rgb("#3b1319")))
+//
 // Everything is reachable two ways: flat (the names below), and by module
 // (`colors.ramps`, `rlmath.state`, `callout.flow-block`). Names
 // that would shadow Typst's own (`state`, `color`, `math`, `document`,
@@ -19,7 +23,9 @@
 #import "src/templates/document.typ" as working
 
 // Color.
-#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, apca, contrast, text-needs, reads, legibility, as-text, readable, tones, roles, palette, fulfillment, chart, swatch
+#import "src/color.typ": ramp, ramp-from, hues, ramps, ref-ramp, stops, jobs, mirror, paper-dark, dark-stop, shade, quiet, quiet-dark, quietness, apca, contrast, text-needs, reads, legibility, as-text, readable, tones, roles, roles-of, palette, palette-of, fulfillment, chart, swatch
+// Themes: a look as data (`theme`), and the kit drawn in it (`themed`).
+#import "src/theme.typ": theme, themed, default-theme
 // Type.
 #import "src/type.typ": faces, ratio, scale, font-options, label-text, minor
 // Marks.

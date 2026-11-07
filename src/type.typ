@@ -43,8 +43,8 @@
 )
 
 /// An UPPERCASE, tracked label in the sans: a section title or a category.
-#let label-text(body, size: scale(-1), tracking: 0.14em, weight: 600, fill: auto) = {
-  let args = (font: faces.sans, size: size, tracking: tracking, weight: weight)
+#let label-text(body, size: scale(-1), tracking: 0.14em, weight: 600, fill: auto, font: faces.sans) = {
+  let args = (font: font, size: size, tracking: tracking, weight: weight)
   if fill != auto { args.insert("fill", fill) }
   text(..args, upper(body))
 }

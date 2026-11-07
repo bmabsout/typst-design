@@ -21,6 +21,7 @@ IMAGES = [
     ("quickstart", "examples/quickstart.typ", 144, [1]),
     ("page-spanning-callout", "examples/page-spanning-callout.typ", 90, [1, 2]),
     ("gallery", "gallery/gallery.typ", 72, [1, 2]),
+    ("themes", "examples/themes.typ", 144, [1]),
 ]
 
 
